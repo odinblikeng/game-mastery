@@ -2,6 +2,7 @@
 
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
@@ -29,76 +30,86 @@ export default function AppShell({ areas, children }: AppShellProps) {
       <Header />
       <Box
         sx={{
-          display: "flex",
           flex: 1,
-          minHeight: 0,
-          flexDirection: { xs: "column", lg: "row" },
+          px: { xs: 1.5, md: 2.5 },
+          py: { xs: 2, md: 3 },
         }}
       >
-        {showAreaSidebar ? (
-          <Box
-            component="aside"
-            sx={{
-              width: { xs: "100%", lg: 320 },
-              flexShrink: 0,
-              alignSelf: { lg: "flex-start" },
-              position: { lg: "sticky" },
-              top: { lg: 88 },
-              borderRight: { lg: 1 },
-              borderBottom: { xs: 1, lg: 0 },
-              borderColor: "divider",
-              p: 2,
-            }}
-          >
-            <Paper
-              elevation={0}
+        <Box
+          sx={{
+            maxWidth: 1600,
+            mx: "auto",
+            display: "flex",
+            minHeight: 0,
+            flexDirection: { xs: "column", lg: "row" },
+            gap: { xs: 2, lg: 3 },
+            alignItems: "flex-start",
+          }}
+        >
+          {showAreaSidebar ? (
+            <Box
+              component="aside"
               sx={{
-                border: 1,
-                borderColor: "divider",
-                p: 2,
-                maxHeight: { lg: "calc(100vh - 104px)" },
-                overflowY: { lg: "auto" },
+                width: { xs: "100%", lg: 340 },
+                flexShrink: 0,
+                alignSelf: { lg: "flex-start" },
+                position: { lg: "sticky" },
+                top: { lg: 104 },
               }}
             >
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Areas
-              </Typography>
-              <AreaSidebar areas={areas} selectedSlug={selectedSlug} />
-            </Paper>
+              <Paper
+                elevation={0}
+                sx={{
+                  border: "1px solid rgba(182, 139, 70, 0.34)",
+                  backgroundColor: "rgba(24, 17, 13, 0.84)",
+                  color: "common.white",
+                  p: 2,
+                  boxShadow: "0 20px 44px rgba(0, 0, 0, 0.25)",
+                  maxHeight: { lg: "calc(100vh - 122px)" },
+                  overflowY: { lg: "auto" },
+                }}
+              >
+                <Stack spacing={0.5} sx={{ mb: 2 }}>
+                  <Typography variant="h6">Area Compendium</Typography>
+                  <Typography variant="body2" sx={{ color: "rgba(243, 233, 219, 0.72)" }}>
+                    Search room codes, titles, and load encounter notes without leaving the dashboard.
+                  </Typography>
+                </Stack>
+                <AreaSidebar areas={areas} selectedSlug={selectedSlug} />
+              </Paper>
+            </Box>
+          ) : null}
+          <Box component="main" className="app-main" sx={{ flex: 1, minWidth: 0 }}>
+            {children}
           </Box>
-        ) : null}
-        <Box component="main" className="app-main" sx={{ minWidth: 0, flex: 1 }}>
-          {children}
+          {showToolsSidebar ? (
+            <Box
+              component="aside"
+              sx={{
+                width: { xs: "100%", lg: 360 },
+                flexShrink: 0,
+                alignSelf: { lg: "flex-start" },
+                position: { lg: "sticky" },
+                top: { lg: 104 },
+              }}
+            >
+              <Paper
+                elevation={0}
+                sx={{
+                  border: "1px solid rgba(182, 139, 70, 0.34)",
+                  backgroundColor: "rgba(24, 17, 13, 0.84)",
+                  color: "common.white",
+                  p: 2,
+                  boxShadow: "0 20px 44px rgba(0, 0, 0, 0.25)",
+                  maxHeight: { lg: "calc(100vh - 122px)" },
+                  overflowY: { lg: "auto" },
+                }}
+              >
+                <ToolsSidebar tool={toolsParam} />
+              </Paper>
+            </Box>
+          ) : null}
         </Box>
-        {showToolsSidebar ? (
-          <Box
-            component="aside"
-            sx={{
-              width: { xs: "100%", lg: 340 },
-              flexShrink: 0,
-              alignSelf: { lg: "flex-start" },
-              position: { lg: "sticky" },
-              top: { lg: 88 },
-              borderLeft: { lg: 1 },
-              borderBottom: { xs: 1, lg: 0 },
-              borderColor: "divider",
-              p: 2,
-            }}
-          >
-            <Paper
-              elevation={0}
-              sx={{
-                border: 1,
-                borderColor: "divider",
-                p: 2,
-                maxHeight: { lg: "calc(100vh - 104px)" },
-                overflowY: { lg: "auto" },
-              }}
-            >
-              <ToolsSidebar tool={toolsParam} />
-            </Paper>
-          </Box>
-        ) : null}
       </Box>
       <Footer />
     </div>

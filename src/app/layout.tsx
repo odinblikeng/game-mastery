@@ -1,17 +1,24 @@
 import InitColorSchemeScript from "@mui/material/InitColorSchemeScript";
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Alegreya_Sans, Cinzel } from "next/font/google";
 import { Suspense } from "react";
 import AppShell from "@/components/AppShell";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import { getAreaList } from "@/lib/areas";
 import "./globals.css";
 
-const roboto = Roboto({
+const bodyFont = Alegreya_Sans({
   display: "swap",
   subsets: ["latin"],
-  variable: "--font-roboto",
-  weight: ["300", "400", "500", "700"],
+  variable: "--font-body",
+  weight: ["400", "500", "700", "800"],
+});
+
+const displayFont = Cinzel({
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-display",
+  weight: ["500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +34,11 @@ export default async function RootLayout({
   const areas = await getAreaList();
 
   return (
-    <html lang="en" className={roboto.variable} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${bodyFont.variable} ${displayFont.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <InitColorSchemeScript attribute="class" />
         <ThemeRegistry>
