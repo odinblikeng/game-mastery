@@ -29,6 +29,27 @@
 - Sidebars should be toggleable from the header and should stick to the viewport on desktop so they remain accessible while scrolling.
 - Use query parameters (e.g. `?sidebar=areas&area=m1`) for panel state instead of route navigation — keep the user on the same page.
 - Keep the app shell stable: header at the top, optional sidebar, main content, footer at the bottom.
+- The left sidebar (`sidebar` param) is for content browsing (areas). The right sidebar (`tools` param) is for session tools (initiative, etc.). Both are independent and can be open simultaneously.
+- Header buttons for sidebars should only toggle their sidebar open/closed via query params — never navigate to a hash or change the content view.
+
+## Tools Sidebar
+- Session tools live in a right sidebar toggled via the `tools` query parameter (`tools=menu`, `tools=initiative`, etc.).
+- `src/components/ToolsSidebar.tsx` is the shell — it reads the `tool` prop to decide which view (menu vs specific tool) to show.
+- Each tool is its own component (e.g. `src/components/InitiativeTracker.tsx`) rendered inside the tools sidebar.
+- Tool views include a back button (arrow-left icon) to return to the tools menu.
+- When adding a new tool: create the component, add it as a case in `ToolsSidebar`, and add a `ListItemButton` in the menu view.
+
+## Drag and Drop
+- Use `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities` for drag-and-drop reordering. MUI has no built-in DnD.
+- Use `useSortable` with `verticalListSortingStrategy` for simple list reorder.
+
+## Form UX Patterns
+- When a form adds items to a list (e.g. adding characters), refocus the first input after submission so the user can immediately add another.
+- For tabular input across multiple rows, use columnar tab order (down the column, then to the next column) instead of row-by-row. Implement with `data-col`/`data-row` attributes and a `handleColumnTab` helper that intercepts Tab key events.
+- Remove non-essential buttons (like per-row delete icons) from tab order with `tabIndex={-1}`.
+
+## Icons
+- MUI Icons (`@mui/icons-material`) does not include a skull icon. Use a custom `SvgIcon` wrapper with an inline SVG path when needed.
 
 ## Project Notes
 - Respect the existing strict TypeScript and Next.js ESLint setup.
