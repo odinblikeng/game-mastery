@@ -9,6 +9,7 @@ import type { AreaMeta } from "@/lib/areas";
 import AreaSidebar from "@/components/AreaSidebar";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import ToolsSidebar from "@/components/ToolsSidebar";
 
 type AppShellProps = {
   areas: AreaMeta[];
@@ -20,6 +21,8 @@ export default function AppShell({ areas, children }: AppShellProps) {
   const selectedSlug = searchParams.get("area") ?? undefined;
   const showAreaSidebar =
     searchParams.get("sidebar") === "areas" || Boolean(selectedSlug);
+  const toolsParam = searchParams.get("tools") ?? undefined;
+  const showToolsSidebar = toolsParam === "menu" || toolsParam === "initiative";
 
   return (
     <div className="app-shell">
@@ -64,9 +67,38 @@ export default function AppShell({ areas, children }: AppShellProps) {
             </Paper>
           </Box>
         ) : null}
-        <Box component="main" className="app-main" sx={{ minWidth: 0 }}>
+        <Box component="main" className="app-main" sx={{ minWidth: 0, flex: 1 }}>
           {children}
         </Box>
+        {showToolsSidebar ? (
+          <Box
+            component="aside"
+            sx={{
+              width: { xs: "100%", lg: 340 },
+              flexShrink: 0,
+              alignSelf: { lg: "flex-start" },
+              position: { lg: "sticky" },
+              top: { lg: 88 },
+              borderLeft: { lg: 1 },
+              borderBottom: { xs: 1, lg: 0 },
+              borderColor: "divider",
+              p: 2,
+            }}
+          >
+            <Paper
+              elevation={0}
+              sx={{
+                border: 1,
+                borderColor: "divider",
+                p: 2,
+                maxHeight: { lg: "calc(100vh - 104px)" },
+                overflowY: { lg: "auto" },
+              }}
+            >
+              <ToolsSidebar tool={toolsParam} />
+            </Paper>
+          </Box>
+        ) : null}
       </Box>
       <Footer />
     </div>

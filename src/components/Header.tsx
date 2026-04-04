@@ -32,6 +32,18 @@ export default function Header() {
     router.push(`/?${params.toString()}#areas`);
   };
 
+  const toggleToolsSidebar = () => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (params.has("tools")) {
+      params.delete("tools");
+    } else {
+      params.set("tools", "menu");
+    }
+
+    router.push(`?${params.toString()}`);
+  };
+
   return (
     <AppBar
       position="sticky"
@@ -96,7 +108,7 @@ export default function Header() {
             </Button>
             <Button
               color="inherit"
-              onClick={() => navigateHomeSection("session-tools")}
+              onClick={toggleToolsSidebar}
               sx={{
                 borderRadius: 999,
                 color: "text.secondary",
@@ -104,7 +116,7 @@ export default function Header() {
                 whiteSpace: "nowrap",
               }}
             >
-              Session Tools
+              Tools
             </Button>
           </Stack>
         </Toolbar>
