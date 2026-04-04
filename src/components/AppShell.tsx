@@ -22,7 +22,7 @@ export default function AppShell({ areas, children }: AppShellProps) {
   const showAreaSidebar =
     searchParams.get("sidebar") === "areas" || Boolean(selectedSlug);
   const toolsParam = searchParams.get("tools") ?? undefined;
-  const showToolsSidebar = toolsParam === "menu" || toolsParam === "initiative";
+  const showToolsSidebar = Boolean(toolsParam);
 
   return (
     <div className="app-shell">

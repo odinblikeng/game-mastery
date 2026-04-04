@@ -34,10 +34,12 @@
 
 ## Tools Sidebar
 - Session tools live in a right sidebar toggled via the `tools` query parameter (`tools=menu`, `tools=initiative`, etc.).
-- `src/components/ToolsSidebar.tsx` is the shell — it reads the `tool` prop to decide which view (menu vs specific tool) to show.
+- `src/components/ToolsSidebar.tsx` is the shell and source of truth for tool registration.
 - Each tool is its own component (e.g. `src/components/InitiativeTracker.tsx`) rendered inside the tools sidebar.
 - Tool views include a back button (arrow-left icon) to return to the tools menu.
-- When adding a new tool: create the component, add it as a case in `ToolsSidebar`, and add a `ListItemButton` in the menu view.
+- Register tools through the typed `toolRegistry` in `src/components/ToolsSidebar.tsx`; the menu and active-tool view both render from that registry.
+- When adding a new tool: create the component, import its icon/component in `ToolsSidebar`, and add one registry entry. Do not add per-tool gating in `AppShell`.
+- Unknown `tools` query values should degrade gracefully by showing the tools menu rather than breaking the sidebar.
 
 ## Drag and Drop
 - Use `@dnd-kit/core`, `@dnd-kit/sortable`, and `@dnd-kit/utilities` for drag-and-drop reordering. MUI has no built-in DnD.

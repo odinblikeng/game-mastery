@@ -1,6 +1,6 @@
 ---
 name: add-tool
-description: "Add a new session tool to the Tools sidebar. Use when: adding a tool, creating a sidebar tool, new tool component, session utility, tools sidebar feature. Covers component creation, ToolsSidebar wiring, AppShell registration, and query param setup."
+description: "Add a new session tool to the Tools sidebar. Use when: adding a tool, creating a sidebar tool, new tool component, session utility, tools sidebar feature. Covers component creation, ToolsSidebar registry wiring, and query param behavior."
 ---
 
 # Add a New Tool to the Tools Sidebar
@@ -34,68 +34,44 @@ Create `src/components/<ToolName>.tsx` as a `"use client"` component.
 - Refocus the first input after form submission for rapid entry
 - MUI Icons (`@mui/icons-material`) has no skull icon — use a custom `SvgIcon` wrapper
 
-### 2. Add the tool to ToolsSidebar
+### 2. Add the tool to the registry in ToolsSidebar
 
 Edit `src/components/ToolsSidebar.tsx`:
 
-**a) Import** the new component at the top:
+**a) Import** the new component and icon at the top:
 ```tsx
 import <ToolName> from "@/components/<ToolName>";
+import SomeIcon from "@mui/icons-material/<SomeIcon>";
 ```
 
-**b) Add a view block** before the menu view (follow the existing pattern):
+**b) Add one registry entry** to `toolRegistry`:
 ```tsx
-if (tool === "<tool-slug>") {
-  return (
-    <>
-      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-        <IconButton size="small" onClick={goBack} aria-label="Back to tools">
-          <ArrowBackRoundedIcon />
-        </IconButton>
-        <Typography variant="h6"><Tool Display Name></Typography>
-      </Stack>
-      <<ToolName> />
-    </>
-  );
-}
+const toolRegistry: ToolDefinition[] = [
+  {
+    slug: "<tool-slug>",
+    label: "<Tool Display Name>",
+    icon: SomeIcon,
+    component: <ToolName>,
+  },
+];
 ```
 
-**c) Add a menu entry** inside the `<List>` in the menu view:
-```tsx
-<ListItemButton
-  sx={{ borderRadius: 2 }}
-  onClick={() => navigate("<tool-slug>")}
->
-  <ListItemIcon sx={{ minWidth: 36 }}>
-    <SomeIcon color="primary" />
-  </ListItemIcon>
-  <ListItemText primary="<Tool Display Name>" />
-</ListItemButton>
-```
+The menu list and tool view both render from the registry, so no additional switch blocks or AppShell changes are needed.
 
-### 3. Register the tool slug in AppShell
-
-Edit `src/components/AppShell.tsx` — add the new slug to the `showToolsSidebar` condition:
-
-```tsx
-const showToolsSidebar = toolsParam === "menu" || toolsParam === "initiative" || toolsParam === "<tool-slug>";
-```
-
-### 4. Verify
+### 3. Verify
 
 1. Run `npm run build` — no TypeScript or build errors
 2. Run `npm run lint` — no new lint errors
 3. Manual: Click "Tools" in header → menu shows new tool entry
 4. Manual: Click the tool → sidebar shows component with back arrow
 5. Manual: Back arrow returns to menu
-6. Manual: Both sidebars can be open simultaneously
+6. Manual: `?tools=<unknown-slug>` falls back to the menu view
+7. Manual: Both sidebars can be open simultaneously
 
 ## Checklist
 
 - [ ] Component created in `src/components/`
 - [ ] `"use client"` directive at top of component
-- [ ] View block added to `ToolsSidebar.tsx` with back button
-- [ ] Menu `ListItemButton` added to `ToolsSidebar.tsx`
-- [ ] Tool slug added to `showToolsSidebar` in `AppShell.tsx`
+- [ ] Registry entry added to `toolRegistry` in `ToolsSidebar.tsx`
 - [ ] Build passes
 - [ ] Lint passes
