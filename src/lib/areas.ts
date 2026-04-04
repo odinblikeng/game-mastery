@@ -1,8 +1,7 @@
 import "server-only";
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
 import type { ComponentType } from "react";
-import M1Content, { metadata as m1Metadata } from "@/content/areas/m1.mdx";
-import M2Content, { metadata as m2Metadata } from "@/content/areas/m2.mdx";
-import M3Content, { metadata as m3Metadata } from "@/content/areas/m3.mdx";
 
 export type AreaMeta = {
   code: string;
@@ -18,39 +17,86 @@ export type AreaEntry = AreaMeta & {
 };
 
 type AreaModule = {
-  Content: ComponentType;
+  default: ComponentType;
   metadata: AreaDocumentMetadata;
 };
 
-const areaModules = {
-  m1: {
-    Content: M1Content,
-    metadata: m1Metadata as AreaDocumentMetadata,
-  },
-  m2: {
-    Content: M2Content,
-    metadata: m2Metadata as AreaDocumentMetadata,
-  },
-  m3: {
-    Content: M3Content,
-    metadata: m3Metadata as AreaDocumentMetadata,
-  },
-} satisfies Record<string, AreaModule>;
+const areaDirectoryPath = join(process.cwd(), "src", "content", "areas");
 
-export type AreaSlug = keyof typeof areaModules;
+let cachedAreaEntriesPromise: Promise<AreaEntry[]> | null = null;
 
-const areaEntries: AreaEntry[] = Object.entries(areaModules)
-  .map(([slug, area]) => ({
-    ...area.metadata,
-    slug,
-    Content: area.Content,
-  }))
-  .sort((a, b) => a.code.localeCompare(b.code));
+function isAreaDocumentMetadata(value: unknown): value is AreaDocumentMetadata {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
 
-export function getAreaList(): AreaMeta[] {
-  return areaEntries.map(({ Content: _content, ...metadata }) => metadata);
+  const metadata = value as Record<string, unknown>;
+
+  return (
+    typeof metadata.code === "string" &&
+    typeof metadata.title === "string" &&
+    typeof metadata.description === "string"
+  );
 }
 
-export function getArea(slug: string): AreaEntry | null {
+async function importAreaModule(slug: string): Promise<AreaModule> {
+  const areaModule = (await import(`../content/areas/${slug}.mdx`)) as Partial<AreaModule>;
+
+  if (typeof areaModule.default !== "function" || !isAreaDocumentMetadata(areaModule.metadata)) {
+    throw new Error(
+      `Area file "${slug}.mdx" must export default MDX content and metadata { code, title, description }.`,
+    );
+  }
+
+  return {
+    default: areaModule.default,
+    metadata: areaModule.metadata,
+  };
+}
+
+async function buildAreaEntries(): Promise<AreaEntry[]> {
+  const areaSlugs = readdirSync(areaDirectoryPath, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".mdx"))
+    .map((entry) => entry.name.slice(0, -4));
+
+  const areaEntries = await Promise.all(
+    areaSlugs.map(async (slug) => {
+      const areaModule = await importAreaModule(slug);
+
+      return {
+        ...areaModule.metadata,
+        slug,
+        Content: areaModule.default,
+      } satisfies AreaEntry;
+    }),
+  );
+
+  return areaEntries.sort((a, b) => a.code.localeCompare(b.code));
+}
+
+async function loadAreas(): Promise<AreaEntry[]> {
+  if (process.env.NODE_ENV !== "production") {
+    return buildAreaEntries();
+  }
+
+  cachedAreaEntriesPromise ??= buildAreaEntries();
+
+  return cachedAreaEntriesPromise;
+}
+
+export async function getAreaList(): Promise<AreaMeta[]> {
+  const areaEntries = await loadAreas();
+
+  return areaEntries.map(({ code, title, description, slug }) => ({
+    code,
+    title,
+    description,
+    slug,
+  }));
+}
+
+export async function getArea(slug: string): Promise<AreaEntry | null> {
+  const areaEntries = await loadAreas();
+
   return areaEntries.find((area) => area.slug === slug) ?? null;
 }

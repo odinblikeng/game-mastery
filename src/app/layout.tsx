@@ -19,12 +19,12 @@ export const metadata: Metadata = {
   description: "A GM workspace for running tabletop roleplaying campaigns.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const areas = getAreaList();
+  const areas = await getAreaList();
 
   return (
     <html lang="en" className={roboto.variable} suppressHydrationWarning>

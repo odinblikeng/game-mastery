@@ -20,8 +20,8 @@
 ## Content Authoring
 - Area content lives as MDX files in `src/content/areas/*.mdx` with exported `metadata` objects for structured data (code, title, description).
 - MDX rendering uses `@next/mdx` with a root `mdx-components.tsx` that maps markdown elements to MUI components.
-- The area registry in `src/lib/areas.ts` uses direct imports from MDX files — keep it simple and typed.
-- When adding new areas, create the `.mdx` file and add its import to `src/lib/areas.ts`.
+- The area loader in `src/lib/areas.ts` auto-discovers MDX files from `src/content/areas/` and expects each file to export a default MDX component plus `metadata` with `code`, `title`, and `description`.
+- When adding or replacing areas, keep the same MDX export shape and place the files in `src/content/areas/`; no registry edits should be required.
 
 ## UI / Layout Preferences
 - The app shell is a single-page layout — avoid dedicated routes for content that should live in a sidebar or panel.

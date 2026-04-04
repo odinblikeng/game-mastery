@@ -8,7 +8,7 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { getArea } from "@/lib/areas";
+import { getArea, getAreaList } from "@/lib/areas";
 
 const toolCards = [
   {
@@ -40,9 +40,15 @@ type HomeProps = {
 
 export default async function Home({ searchParams }: HomeProps) {
   const { sidebar, area } = await searchParams;
-  const selectedArea = area ? getArea(area) : null;
+  const areas = await getAreaList();
+  const selectedArea = area ? await getArea(area) : null;
+  const firstArea = areas[0] ?? null;
   const showAreaSidebar = sidebar === "areas" || Boolean(selectedArea);
   const SelectedAreaContent = selectedArea?.Content;
+  const areaCountLabel =
+    areas.length === 0
+      ? "No area files loaded"
+      : `${areas.length} area ${areas.length === 1 ? "file" : "files"} ready`;
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 5, md: 8 } }}>
@@ -66,7 +72,7 @@ export default async function Home({ searchParams }: HomeProps) {
               <Chip label="Next.js 16" color="primary" variant="outlined" />
               <Chip label="React 19" color="primary" variant="outlined" />
               <Chip label="Material UI" color="primary" variant="outlined" />
-              <Chip label="3 area files ready" color="secondary" variant="outlined" />
+              <Chip label={areaCountLabel} color="secondary" variant="outlined" />
             </Stack>
             <Stack spacing={2} sx={{ maxWidth: 760 }}>
               <Typography variant="h1" sx={{ fontSize: { xs: "2.5rem", md: "4.25rem" } }}>
@@ -78,9 +84,19 @@ export default async function Home({ searchParams }: HomeProps) {
               </Typography>
             </Stack>
             <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-              <Button href="/?sidebar=areas&area=m1#areas" size="large" variant="contained">
-                Open First Area
-              </Button>
+              {firstArea ? (
+                <Button
+                  href={`/?sidebar=areas&area=${firstArea.slug}#areas`}
+                  size="large"
+                  variant="contained"
+                >
+                  Open First Area
+                </Button>
+              ) : (
+                <Button href="/?sidebar=areas#areas" size="large" variant="contained">
+                  Open Areas
+                </Button>
+              )}
               <Button href="/?sidebar=areas#areas" size="large" variant="outlined">
                 Browse All Areas
               </Button>
@@ -106,7 +122,16 @@ export default async function Home({ searchParams }: HomeProps) {
               minHeight: 320,
             }}
           >
-            {selectedArea && SelectedAreaContent ? (
+            {areas.length === 0 ? (
+              <Stack spacing={2} sx={{ maxWidth: 640 }}>
+                <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                  No area content found.
+                </Typography>
+                <Typography color="text.secondary">
+                  Add MDX files under src/content/areas with a default MDX export and metadata containing code, title, and description.
+                </Typography>
+              </Stack>
+            ) : selectedArea && SelectedAreaContent ? (
               <Stack spacing={3}>
                 <Stack spacing={1.5}>
                   <Chip label={selectedArea.code} color="primary" sx={{ alignSelf: "flex-start", fontWeight: 700 }} />
