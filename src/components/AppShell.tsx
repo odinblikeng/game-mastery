@@ -1,10 +1,12 @@
 "use client";
 
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import type { AreaMeta } from "@/lib/areas";
 import AreaSidebar from "@/components/AreaSidebar";
@@ -18,12 +20,20 @@ type AppShellProps = {
 };
 
 export default function AppShell({ areas, children }: AppShellProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const selectedSlug = searchParams.get("area") ?? undefined;
   const showAreaSidebar =
     searchParams.get("sidebar") === "areas" || Boolean(selectedSlug);
   const toolsParam = searchParams.get("tools") ?? undefined;
   const showToolsSidebar = Boolean(toolsParam);
+
+  const closeSidebar = (keys: string[]) => {
+    const params = new URLSearchParams(searchParams.toString());
+    keys.forEach((k) => params.delete(k));
+    const query = params.toString();
+    router.push(query ? `/?${query}` : "/");
+  };
 
   return (
     <div className="app-shell">
@@ -69,11 +79,21 @@ export default function AppShell({ areas, children }: AppShellProps) {
                   overflowY: { lg: "auto" },
                 }}
               >
-                <Stack spacing={0.5} sx={{ mb: 2 }}>
-                  <Typography variant="h6">Area Compendium</Typography>
-                  <Typography variant="body2" sx={{ color: "rgba(243, 233, 219, 0.72)" }}>
-                    Search room codes, titles, and load encounter notes without leaving the dashboard.
-                  </Typography>
+                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+                  <Stack spacing={0.5}>
+                    <Typography variant="h6">Area Compendium</Typography>
+                    <Typography variant="body2" sx={{ color: "rgba(243, 233, 219, 0.72)" }}>
+                      Search room codes, titles, and load encounter notes.
+                    </Typography>
+                  </Stack>
+                  <IconButton
+                    size="small"
+                    onClick={() => closeSidebar(["sidebar", "area"])}
+                    aria-label="Close area sidebar"
+                    sx={{ color: "common.white", flexShrink: 0 }}
+                  >
+                    <CloseRoundedIcon fontSize="small" />
+                  </IconButton>
                 </Stack>
                 <AreaSidebar areas={areas} selectedSlug={selectedSlug} />
               </Paper>
@@ -105,6 +125,17 @@ export default function AppShell({ areas, children }: AppShellProps) {
                   overflowY: { lg: "auto" },
                 }}
               >
+                <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+                  <Typography variant="h6">Session Tools</Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => closeSidebar(["tools"])}
+                    aria-label="Close tools sidebar"
+                    sx={{ color: "common.white" }}
+                  >
+                    <CloseRoundedIcon fontSize="small" />
+                  </IconButton>
+                </Stack>
                 <ToolsSidebar tool={toolsParam} />
               </Paper>
             </Box>
