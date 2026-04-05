@@ -25,6 +25,7 @@ node_modules
 *.pem
 /packages/app/src/content/
 /packages/app/public/monsters/
+/level1
 
 # debug
 npm-debug.log*
