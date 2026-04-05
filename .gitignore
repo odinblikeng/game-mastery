@@ -25,6 +25,8 @@ node_modules
 *.pem
 /content
 /packages/app/src/content/
+/public/resources/
+/packages/app/public/resources/
 
 # debug
 npm-debug.log*
