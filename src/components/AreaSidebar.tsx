@@ -9,9 +9,9 @@ import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import type { AreaMeta } from "@/lib/areas";
+import useQueryParams from "@/hooks/useQueryParams";
 
 type AreaSidebarProps = {
   areas: AreaMeta[];
@@ -19,16 +19,8 @@ type AreaSidebarProps = {
 };
 
 export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
-  const searchParams = useSearchParams();
+  const { buildHref } = useQueryParams();
   const [search, setSearch] = useState("");
-
-  const buildAreaHref = (slug: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("sidebar", "areas");
-    params.set("area", slug);
-
-    return `/?${params.toString()}#areas`;
-  };
 
   const filtered = areas.filter((area) => {
     const q = search.toLowerCase();
@@ -40,6 +32,12 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
 
   return (
     <>
+      <Stack spacing={0.5} sx={{ mb: 2, pr: 4 }}>
+        <Typography variant="h6">Area Compendium</Typography>
+        <Typography variant="body2" sx={{ color: "sidebar.mutedText" }}>
+          Search room codes, titles, and load encounter notes.
+        </Typography>
+      </Stack>
       <TextField
         placeholder="Search by code or title"
         size="small"
@@ -55,14 +53,14 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
         spacing={1}
         sx={{ mb: 1.5 }}
       >
-        <Typography variant="overline" sx={{ color: "rgba(243, 233, 219, 0.7)", letterSpacing: "0.16em" }}>
+        <Typography variant="overline" sx={{ color: "sidebar.mutedText", letterSpacing: "0.16em" }}>
           Ready Rooms
         </Typography>
         <Chip
           label={`${filtered.length} ${filtered.length === 1 ? "entry" : "entries"}`}
           size="small"
           variant="outlined"
-          sx={{ color: "common.white", borderColor: "rgba(182, 139, 70, 0.35)" }}
+          sx={{ color: "common.white", borderColor: "sidebar.border" }}
         />
       </Stack>
       {areas.length === 0 ? (
@@ -79,7 +77,7 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
             <ListItemButton
               key={area.slug}
               component={Link}
-              href={buildAreaHref(area.slug)}
+              href={buildHref({ sidebar: "areas", area: area.slug })}
               selected={selectedSlug === area.slug}
               sx={{
                 alignItems: "flex-start",
@@ -120,7 +118,7 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
                   primary={null}
                   secondary={area.description}
                   secondaryTypographyProps={{
-                    color: "rgba(243, 233, 219, 0.7)",
+                    color: "sidebar.mutedText",
                     lineHeight: 1.55,
                   }}
                   sx={{ m: 0 }}

@@ -12,9 +12,9 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ComponentType } from "react";
 import InitiativeTracker from "@/components/InitiativeTracker";
+import useQueryParams from "@/hooks/useQueryParams";
 
 type ToolsSidebarProps = {
   tool?: string;
@@ -39,17 +39,10 @@ const toolRegistry: ToolDefinition[] = [
 ];
 
 export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const { set } = useQueryParams();
   const activeTool = toolRegistry.find(({ slug }) => slug === tool);
 
-  const navigate = (toolValue: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tools", toolValue);
-    router.push(`${pathname || "/"}?${params.toString()}`);
-  };
-
+  const navigate = (toolValue: string) => set({ tools: toolValue });
   const goBack = () => navigate("menu");
 
   if (activeTool) {
@@ -62,13 +55,13 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
             size="small"
             onClick={goBack}
             aria-label="Back to tools"
-            sx={{ border: "1px solid rgba(182, 139, 70, 0.3)", color: "common.white" }}
+            sx={{ border: 1, borderColor: "sidebar.border", color: "common.white" }}
           >
             <ArrowBackRoundedIcon />
           </IconButton>
           <Typography variant="h6">{activeTool.label}</Typography>
         </Stack>
-        <Typography variant="body2" sx={{ mb: 2.5, color: "rgba(243, 233, 219, 0.72)" }}>
+        <Typography variant="body2" sx={{ mb: 2.5, color: "sidebar.mutedText" }}>
           {activeTool.description}
         </Typography>
         <ActiveTool />
@@ -78,10 +71,10 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
 
   return (
     <>
-      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2, pr: 4 }}>
         <Box>
           <Typography variant="h6">Session Tools</Typography>
-          <Typography variant="body2" sx={{ color: "rgba(243, 233, 219, 0.72)" }}>
+          <Typography variant="body2" sx={{ color: "sidebar.mutedText" }}>
             Table-side utilities registered in the command rail.
           </Typography>
         </Box>
@@ -110,7 +103,7 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
               primary={label}
               secondary={description}
               primaryTypographyProps={{ color: "common.white", fontWeight: 700 }}
-              secondaryTypographyProps={{ color: "rgba(243, 233, 219, 0.72)", lineHeight: 1.5 }}
+              secondaryTypographyProps={{ color: "sidebar.mutedText", lineHeight: 1.5 }}
             />
           </ListItemButton>
         ))}

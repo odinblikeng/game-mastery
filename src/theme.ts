@@ -1,9 +1,9 @@
 import { alpha, createTheme } from "@mui/material/styles";
 
-const ember = "#a43d24";
-const gold = "#b68b46";
-const parchment = "#f3ead8";
-const ink = "#2c1b11";
+export const ember = "#a43d24";
+export const gold = "#b68b46";
+export const parchment = "#f3ead8";
+export const ink = "#2c1b11";
 
 const headingStyles = {
   fontFamily: "var(--font-display), serif",
@@ -47,6 +47,12 @@ const theme = createTheme({
         warning: {
           main: "#bd7a1a",
         },
+        sidebar: {
+          background: "rgba(24, 17, 13, 0.84)",
+          border: alpha(gold, 0.34),
+          shadow: "0 20px 44px rgba(0, 0, 0, 0.25)",
+          mutedText: alpha(parchment, 0.72),
+        },
       },
     },
     dark: {
@@ -78,6 +84,12 @@ const theme = createTheme({
         },
         warning: {
           main: "#e0a343",
+        },
+        sidebar: {
+          background: "rgba(24, 17, 13, 0.84)",
+          border: alpha(gold, 0.34),
+          shadow: "0 20px 44px rgba(0, 0, 0, 0.25)",
+          mutedText: alpha(parchment, 0.72),
         },
       },
     },

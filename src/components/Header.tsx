@@ -8,49 +8,29 @@ import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { useRouter, useSearchParams } from "next/navigation";
+import useQueryParams from "@/hooks/useQueryParams";
 
 export default function Header() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const isAreaSidebarOpen =
-    searchParams.get("sidebar") === "areas" || searchParams.has("area");
-  const isToolsSidebarOpen = searchParams.has("tools");
+  const { get, has, set, remove } = useQueryParams();
+  const isAreaSidebarOpen = get("sidebar") === "areas" || has("area");
+  const isToolsSidebarOpen = has("tools");
 
-  const buildUrl = (params: URLSearchParams) => {
-    const query = params.toString();
-
-    return query ? `/?${query}` : "/";
-  };
-
-  const navigateHome = () => {
-    router.push("/");
-  };
+  const navigateHome = () => remove("sidebar", "area", "tools");
 
   const toggleAreasSidebar = () => {
-    const params = new URLSearchParams(searchParams.toString());
-
     if (isAreaSidebarOpen) {
-      params.delete("sidebar");
-      params.delete("area");
-      router.push(buildUrl(params));
-      return;
+      remove("sidebar", "area");
+    } else {
+      set({ sidebar: "areas" });
     }
-
-    params.set("sidebar", "areas");
-    router.push(buildUrl(params));
   };
 
   const toggleToolsSidebar = () => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (params.has("tools")) {
-      params.delete("tools");
+    if (isToolsSidebarOpen) {
+      remove("tools");
     } else {
-      params.set("tools", "menu");
+      set({ tools: "menu" });
     }
-
-    router.push(buildUrl(params));
   };
 
   return (
