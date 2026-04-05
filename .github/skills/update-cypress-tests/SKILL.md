@@ -111,8 +111,11 @@ Important execution notes:
 - Use `rg` for searches.
 - Run the targeted Cypress spec from the repo root so workspace resolution is correct.
 - If the dev server is started in a background terminal, confirm it is actually ready before running Cypress.
+- If the agent starts the dev server, the agent owns that process and must not stop it until the Cypress process has fully exited and the final summary is available.
 - When running Cypress, use a blocking terminal when practical. If a background terminal is used, explicitly wait for completion with the terminal-waiting tool and confirm the exit status.
 - Do not treat partial live output as a finished result. A line like `Running: ...` is not completion.
+- Do not infer completion from an idle or partial terminal snapshot if the Cypress footer is missing. Re-check the same terminal until the final `Run Finished` summary and shell prompt are present.
+- If a Cypress run fails with `ECONNREFUSED`, `ERR_CONNECTION_REFUSED`, or a `cy.visit()` network error after earlier tests already passed, first suspect that the app server stopped mid-run and verify server-process ownership before changing test code.
 - If a background dev server is started, stop it before finishing.
 - Do not edit generated `.next` files.
 - Do not run the entire Cypress sweep unless the calling agent explicitly asks for it.
@@ -151,6 +154,7 @@ The task is complete only when all of the following are true:
 - TypeScript passes for both workspaces
 - The changed or added spec passes against a live dev server
 - The Cypress command has fully completed and its result is confirmed from final command status, not partial output
+- Any dev server started for verification remained running until Cypress fully exited
 - The final response states that the targeted spec is ready and the full sweep has not been run yet
 
 ## Quality Bar

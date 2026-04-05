@@ -91,6 +91,8 @@ Terminal waiting rules:
 - Prefer a blocking terminal for the full Cypress run when practical.
 - If a background terminal is used, explicitly wait for completion with the terminal-waiting tool.
 - Do not report pass or fail until the command has exited and the final summary is available.
+- If the agent started the app server for the sweep, do not stop it until the Cypress process has fully exited and the final summary plus shell prompt are present.
+- If terminal waiting returns early or the output stops at an in-progress section, re-check the same terminal and keep waiting rather than assuming completion.
 - Use a generous timeout or an explicit wait without timeout guessing.
 
 Return format:
@@ -120,6 +122,7 @@ The task is complete only when all of the following are true:
 - The app server was confirmed ready before Cypress ran
 - The full Cypress command fully completed
 - Final status is based on command completion and final summary
+- Any app server started by the task remained alive until Cypress fully exited
 - Passing and failing specs are listed clearly
 - Failures are grouped by feature area when present
 - Any background dev server started by the task is stopped before finishing

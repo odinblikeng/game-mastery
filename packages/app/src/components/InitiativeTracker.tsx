@@ -194,7 +194,11 @@ function SortableRow({
       >
         <DragIndicatorRoundedIcon fontSize="small" />
       </Box>
-      <Typography sx={{ flex: 1, fontWeight: isActive && !char.dying ? 700 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+      <Typography
+        data-testid={`cy-initiative-row-name-${toTestId(char.name)}`}
+        title={baseDisplayName}
+        sx={{ flex: 1, fontWeight: isActive && !char.dying ? 700 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
+      >
         {baseDisplayName}
       </Typography>
       {char.copyIndex != null ? (
@@ -772,7 +776,11 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
               alignItems="center"
               sx={{ px: 1 }}
             >
-              <Typography sx={{ flex: 1, fontSize: "0.875rem", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+              <Typography
+                data-testid={`cy-initiative-setup-name-${toTestId(char.name)}`}
+                title={char.copyIndex != null ? char.name.replace(/ \d+$/, '') : char.name}
+                sx={{ flex: 1, fontSize: "0.875rem", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}
+              >
                 {char.copyIndex != null ? char.name.replace(/ \d+$/, '') : char.name}
               </Typography>
               {char.copyIndex != null ? (
