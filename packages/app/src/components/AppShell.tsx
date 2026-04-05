@@ -55,6 +55,10 @@ function clampToolsSidebarWidth(
 }
 
 function getInitialToolsSidebarWidth() {
+  return DEFAULT_TOOLS_SIDEBAR_WIDTH;
+}
+
+function getStoredToolsSidebarWidth() {
   if (typeof window === "undefined") {
     return DEFAULT_TOOLS_SIDEBAR_WIDTH;
   }
@@ -62,45 +66,41 @@ function getInitialToolsSidebarWidth() {
   const storedValue = window.sessionStorage.getItem(TOOLS_SIDEBAR_STORAGE_KEY);
   const parsedWidth = storedValue ? Number(storedValue) : DEFAULT_TOOLS_SIDEBAR_WIDTH;
 
-  if (Number.isNaN(parsedWidth)) {
-    return DEFAULT_TOOLS_SIDEBAR_WIDTH;
-  }
-
-  return parsedWidth;
+  return Number.isNaN(parsedWidth) ? DEFAULT_TOOLS_SIDEBAR_WIDTH : parsedWidth;
 }
 
 export default function AppShell({ areas, monsters, children }: AppShellProps) {
   const { get, remove } = useQueryParams();
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"), { noSsr: true });
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const isHydrated = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false,
   );
-  const [viewportWidth, setViewportWidth] = useState(() =>
-    typeof window === "undefined" ? APP_SHELL_MAX_WIDTH : window.innerWidth,
+  const storedToolsSidebarWidth = useSyncExternalStore(
+    () => () => {},
+    getStoredToolsSidebarWidth,
+    getInitialToolsSidebarWidth,
   );
+  const [viewportWidth, setViewportWidth] = useState(APP_SHELL_MAX_WIDTH);
   const selectedSlug = get("area") ?? undefined;
   const showAreaSidebar =
     get("sidebar") === "areas" || Boolean(selectedSlug);
   const toolsParam = get("tools") ?? undefined;
   const showToolsSidebar = Boolean(toolsParam);
-  const [toolsSidebarWidth, setToolsSidebarWidth] = useState(getInitialToolsSidebarWidth);
+  const [toolsSidebarWidthOverride, setToolsSidebarWidthOverride] = useState<number | null>(null);
+  const preferredToolsSidebarWidth = toolsSidebarWidthOverride ?? storedToolsSidebarWidth;
   const toolsSidebarMaxWidth = clampToolsSidebarWidth(
     MAX_TOOLS_SIDEBAR_WIDTH,
     viewportWidth,
     showAreaSidebar,
   );
   const effectiveToolsSidebarWidth = isDesktop
-    ? clampToolsSidebarWidth(toolsSidebarWidth, viewportWidth, showAreaSidebar)
-    : toolsSidebarWidth;
+    ? clampToolsSidebarWidth(preferredToolsSidebarWidth, viewportWidth, showAreaSidebar)
+    : preferredToolsSidebarWidth;
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-
     const handleResize = () => {
       setViewportWidth(window.innerWidth);
     };
@@ -113,20 +113,13 @@ export default function AppShell({ areas, monsters, children }: AppShellProps) {
     };
   }, []);
 
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
+  const handleToolsSidebarWidthChange = (nextWidth: number) => {
+    const clampedWidth = clampToolsSidebarWidth(nextWidth, viewportWidth, showAreaSidebar);
 
+    setToolsSidebarWidthOverride(clampedWidth);
     window.sessionStorage.setItem(
       TOOLS_SIDEBAR_STORAGE_KEY,
-      String(Math.round(effectiveToolsSidebarWidth)),
-    );
-  }, [effectiveToolsSidebarWidth]);
-
-  const handleToolsSidebarWidthChange = (nextWidth: number) => {
-    setToolsSidebarWidth(
-      clampToolsSidebarWidth(nextWidth, viewportWidth, showAreaSidebar),
+      String(Math.round(clampedWidth)),
     );
   };
 

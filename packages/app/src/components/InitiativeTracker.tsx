@@ -34,7 +34,7 @@ import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { MonsterSummary } from "@/types/monster";
 
 function SkullIcon(props: React.ComponentProps<typeof SvgIcon>) {
@@ -116,6 +116,114 @@ const renumberMonsterCopies = <T extends MonsterNamedEntry>(
   });
 };
 
+function MonsterHpChip({
+  id,
+  name,
+  currentHp,
+  maxHp,
+  onSetHp,
+}: {
+  id: string;
+  name: string;
+  currentHp: number;
+  maxHp: number;
+  onSetHp: (id: string, value: string) => void;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [draftHp, setDraftHp] = useState(String(currentHp));
+  const inputRef = useRef<HTMLInputElement>(null);
+  const skipBlurCommitRef = useRef(false);
+
+  useEffect(() => {
+    if (isEditing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [isEditing]);
+
+  const exitEditor = () => {
+    setIsEditing(false);
+    skipBlurCommitRef.current = false;
+  };
+
+  const commitDraft = () => {
+    onSetHp(id, draftHp);
+    exitEditor();
+  };
+
+  return isEditing ? (
+    <TextField
+      inputRef={inputRef}
+      size="small"
+      type="number"
+      value={draftHp}
+      onChange={(event) => setDraftHp(event.target.value)}
+      onBlur={() => {
+        if (skipBlurCommitRef.current) {
+          skipBlurCommitRef.current = false;
+          return;
+        }
+
+        commitDraft();
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          commitDraft();
+        }
+
+        if (event.key === "Escape") {
+          event.preventDefault();
+          skipBlurCommitRef.current = true;
+          setDraftHp(String(currentHp));
+          exitEditor();
+        }
+      }}
+      sx={{
+        width: 74,
+        "& .MuiInputBase-root": {
+          height: 32,
+          color: "inherit",
+        },
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "currentColor",
+        },
+      }}
+      slotProps={{
+        htmlInput: {
+          min: 0,
+          max: maxHp,
+          inputMode: "numeric",
+          "aria-label": `Current HP for ${name}`,
+          "data-testid": `cy-initiative-hp-${toTestId(name)}`,
+        },
+      }}
+    />
+  ) : (
+    <Chip
+      clickable
+      size="small"
+      variant="outlined"
+      label={`HP ${currentHp}/${maxHp}`}
+      onClick={(event) => {
+        event.stopPropagation();
+        setDraftHp(String(currentHp));
+        setIsEditing(true);
+      }}
+      aria-label={`Edit HP for ${name}`}
+      data-testid={`cy-initiative-hp-chip-${toTestId(name)}`}
+      color={currentHp <= 0 ? "error" : currentHp < maxHp ? "warning" : "default"}
+      sx={{
+        fontWeight: 700,
+        maxWidth: 108,
+        "& .MuiChip-label": {
+          px: 1,
+        },
+      }}
+    />
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Sortable row used after Ready                                     */
 /* ------------------------------------------------------------------ */
@@ -151,7 +259,7 @@ function SortableRow({
   };
 
   const isMonster = typeof char.maxHp === "number";
-  const currentHp = isMonster ? (char.hp ?? char.maxHp) : null;
+  const currentHp = isMonster ? (char.hp ?? char.maxHp ?? 0) : null;
   const isSkipped = isMonster ? (currentHp ?? 0) <= 0 : char.dying && char.failures >= 3;
   const isStabilized = !isMonster && char.dying && char.successes >= 3;
   const baseDisplayName = char.copyIndex != null
@@ -205,38 +313,13 @@ function SortableRow({
         <Chip label={`#${char.copyIndex}`} size="small" variant="outlined" sx={{ fontWeight: 700 }} />
       ) : null}
       {isMonster ? (
-        <Stack direction="row" alignItems="center" spacing={0.75}>
-          <Typography variant="caption" sx={{ fontWeight: 700 }}>
-            HP
-          </Typography>
-          <TextField
-            size="small"
-            type="number"
-            value={currentHp ?? ""}
-            onChange={(event) => onSetHp(char.id, event.target.value)}
-            sx={{
-              width: 78,
-              "& .MuiInputBase-root": {
-                height: 32,
-                color: "inherit",
-              },
-              "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: "currentColor",
-              },
-            }}
-            slotProps={{
-              htmlInput: {
-                min: 0,
-                max: char.maxHp,
-                "aria-label": `Current HP for ${char.name}`,
-                "data-testid": `cy-initiative-hp-${toTestId(char.name)}`,
-              },
-            }}
-          />
-          <Typography variant="caption" sx={{ minWidth: 38 }}>
-            / {char.maxHp}
-          </Typography>
-        </Stack>
+        <MonsterHpChip
+          id={char.id}
+          name={char.name}
+          currentHp={currentHp ?? 0}
+          maxHp={char.maxHp ?? 0}
+          onSetHp={onSetHp}
+        />
       ) : null}
       <Typography
         sx={{ fontWeight: 700, minWidth: 32, textAlign: "right" }}

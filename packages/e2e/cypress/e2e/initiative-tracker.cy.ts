@@ -228,7 +228,10 @@ describe("Initiative tracker", () => {
     cy.get('[aria-label="Gandalf roll"]').type("15");
     cy.get('[data-testid="cy-initiative-ready-button"]').click();
 
-    cy.get('[data-testid="cy-initiative-hp-swarm-of-animated-books"]').should("have.value", "22");
+    cy.get('[data-testid="cy-initiative-hp-chip-swarm-of-animated-books"]').should(
+      "contain",
+      "HP 22/22",
+    );
     cy.get('[aria-label="Mark Swarm of Animated Books as dying"]').should("not.exist");
     cy.get('[aria-label="Mark Gandalf as dying"]').should("exist");
   });
@@ -247,7 +250,8 @@ describe("Initiative tracker", () => {
       "true",
     );
 
-    cy.get('[data-testid="cy-initiative-hp-swarm-of-animated-books"]').clear().type("0");
+    cy.get('[data-testid="cy-initiative-hp-chip-swarm-of-animated-books"]').click();
+    cy.get('[data-testid="cy-initiative-hp-swarm-of-animated-books"]').clear().type("0{enter}");
     cy.get('[data-testid="cy-initiative-row-swarm-of-animated-books"]').should(
       "have.attr",
       "data-state",

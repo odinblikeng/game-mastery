@@ -37,7 +37,7 @@ export default function SidebarPanel({
   children,
 }: SidebarPanelProps) {
   const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"), { noSsr: true });
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const [isResizing, setIsResizing] = useState(false);
   const resizeStateRef = useRef({ startX: 0, startWidth: width });
   const canResize = isResizable && isDesktop && typeof onWidthChange === "function";
