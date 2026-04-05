@@ -23,9 +23,7 @@ node_modules
 # misc
 .DS_Store
 *.pem
-/content
 /packages/app/src/content/
-/public/resources/
 /packages/app/public/monsters/
 
 # debug

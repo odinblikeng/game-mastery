@@ -107,3 +107,4 @@ npm.cmd run test:e2e:open
 - The Next.js application lives in `packages/app`.
 - Cypress specs and support files live in `packages/e2e`.
 - The root package only coordinates workspace commands.
+- Local content templates and ignored content structure are documented in `docs/templates/README.md`.

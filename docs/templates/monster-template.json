@@ -1,0 +1,11 @@
+{
+  "name": "Monster Name",
+  "hitPoints": {
+    "value": 11
+  },
+  "abilityScores": {
+    "DEX": {
+      "modifier": 2
+    }
+  }
+}

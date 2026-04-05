@@ -55,4 +55,3 @@
 
 ## Project Notes
 - Respect the existing strict TypeScript and Next.js ESLint setup.
-- Old area markdown files in `public/resources/areas/` have been replaced by MDX under `src/content/areas/`.
