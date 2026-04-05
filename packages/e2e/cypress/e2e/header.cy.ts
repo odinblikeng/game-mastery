@@ -57,6 +57,7 @@ describe("Header navigation", () => {
     visitAndWait("/");
 
     cy.get('[data-testid="cy-header-area-button"]').click();
+    cy.location("search").should("include", "sidebar=areas");
     cy.get('[data-testid="cy-header-tools-button"]').click();
 
     cy.location("search").should("include", "sidebar=areas");

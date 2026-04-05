@@ -1,6 +1,5 @@
 "use client";
 
-import type { SvgIconComponent } from "@mui/icons-material";
 import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import CasinoRoundedIcon from "@mui/icons-material/CasinoRounded";
 import Box from "@mui/material/Box";
@@ -12,26 +11,14 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import type { ComponentType } from "react";
 import InitiativeTracker from "@/components/InitiativeTracker";
 import useQueryParams from "@/hooks/useQueryParams";
 import type { MonsterSummary } from "@/types/monster";
+import type { ToolDefinition } from "@/types/tools";
 
 type ToolsSidebarProps = {
     tool?: string;
     monsters: MonsterSummary[];
-};
-
-type ToolComponentProps = {
-    monsters: MonsterSummary[];
-};
-
-type ToolDefinition = {
-    slug: string;
-    label: string;
-    description: string;
-    icon: SvgIconComponent;
-    component: ComponentType<ToolComponentProps>;
 };
 
 const toolRegistry: ToolDefinition[] = [

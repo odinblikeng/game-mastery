@@ -59,14 +59,14 @@ Open `http://localhost:3000` in your browser.
 
 Run all commands from the repository root unless noted otherwise.
 
-| Command | What it does |
-|---|---|
-| `npm.cmd run dev` | Starts the Next.js app from `packages/app` in development mode |
-| `npm.cmd run build` | Builds the Next.js app for production |
-| `npm.cmd run start` | Starts the built Next.js app |
-| `npm.cmd run lint` | Runs ESLint for the app workspace |
-| `npm.cmd run test:e2e` | Runs Cypress end-to-end tests in headless mode |
-| `npm.cmd run test:e2e:open` | Opens the Cypress interactive runner |
+| Command                     | What it does                                                   |
+| --------------------------- | -------------------------------------------------------------- |
+| `npm.cmd run dev`           | Starts the Next.js app from `packages/app` in development mode |
+| `npm.cmd run build`         | Builds the Next.js app for production                          |
+| `npm.cmd run start`         | Starts the built Next.js app                                   |
+| `npm.cmd run lint`          | Runs ESLint for the app workspace                              |
+| `npm.cmd run test:e2e`      | Runs Cypress end-to-end tests in headless mode                 |
+| `npm.cmd run test:e2e:open` | Opens the Cypress interactive runner                           |
 
 ## Workspace Commands
 
