@@ -12,7 +12,7 @@ describe("Header navigation", () => {
     visitAndWait("/");
 
     cy.contains("Campaign Command Screen").should("be.visible");
-    cy.contains("Live Table").should("be.visible");
+    cy.get('[data-testid="cy-header-theme-toggle"]').should("be.visible");
     cy.get('[data-testid="cy-header-dashboard-button"]').should("be.visible");
     cy.get('[data-testid="cy-header-area-button"]').should("be.visible");
     cy.get('[data-testid="cy-header-tools-button"]').should("be.visible");

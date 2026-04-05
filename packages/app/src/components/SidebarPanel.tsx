@@ -37,7 +37,7 @@ export default function SidebarPanel({
           border: 1,
           borderColor: "sidebar.border",
           backgroundColor: "sidebar.background",
-          color: "common.white",
+          color: "sidebar.text",
           p: 2,
           boxShadow: (t) => t.palette.sidebar.shadow,
           maxHeight: { lg: "calc(100vh - 122px)" },
@@ -53,7 +53,7 @@ export default function SidebarPanel({
             position: "absolute",
             top: 8,
             right: 8,
-            color: "common.white",
+            color: "sidebar.text",
             zIndex: 1,
           }}
         >

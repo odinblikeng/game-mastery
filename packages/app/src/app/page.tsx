@@ -65,19 +65,18 @@ export default async function Home({ searchParams }: HomeProps) {
           sx={{
             position: "relative",
             overflow: "hidden",
-            border: "1px solid rgba(182, 139, 70, 0.4)",
+            border: 1,
+            borderColor: "hero.border",
             px: { xs: 3, md: 5 },
             py: { xs: 4, md: 6 },
-            background:
-              "linear-gradient(135deg, rgba(22, 15, 11, 0.98), rgba(45, 31, 22, 0.95))",
-            color: "common.white",
-            boxShadow: "0 26px 60px rgba(0, 0, 0, 0.28)",
+            background: "var(--mui-palette-hero-background)",
+            color: "hero.text",
+            boxShadow: "var(--mui-palette-hero-shadow)",
             "&::before": {
               content: '""',
               position: "absolute",
               inset: 0,
-              background:
-                "radial-gradient(circle at top right, rgba(182, 139, 70, 0.18), transparent 32%), radial-gradient(circle at left, rgba(164, 61, 36, 0.22), transparent 34%)",
+              background: "var(--mui-palette-hero-overlay)",
               pointerEvents: "none",
             },
           }}
@@ -87,12 +86,12 @@ export default async function Home({ searchParams }: HomeProps) {
               label={areaCountLabel}
               color="primary"
               variant="outlined"
-              sx={{ alignSelf: "flex-start", color: "common.white" }}
+              sx={{ alignSelf: "flex-start", color: "hero.text" }}
             />
-            <Typography variant="h1" sx={{ color: "common.white", fontSize: { xs: "2.4rem", md: "4rem" } }}>
+            <Typography variant="h1" sx={{ color: "hero.text", fontSize: { xs: "2.4rem", md: "4rem" } }}>
               Game Mastery
             </Typography>
-            <Typography variant="body1" sx={{ color: "rgba(243, 233, 219, 0.78)" }}>
+            <Typography variant="body1" sx={{ color: "hero.mutedText" }}>
               {showAreaSidebar
                 ? "The area compendium is open — select an entry from the sidebar to load its notes here."
                 : "Open the area compendium or session tools from the header to get started."}

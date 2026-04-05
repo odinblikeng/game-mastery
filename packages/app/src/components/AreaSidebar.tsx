@@ -1,17 +1,14 @@
 "use client";
 
-import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Link from "next/link";
 import { useState } from "react";
 import type { AreaMeta } from "@/lib/areas";
 import useQueryParams from "@/hooks/useQueryParams";
+import AreaListItem from "@/components/AreaListItem";
 
 type AreaSidebarProps = {
   areas: AreaMeta[];
@@ -62,7 +59,7 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
           size="small"
           variant="outlined"
           data-testid="cy-area-count-chip"
-          sx={{ color: "common.white", borderColor: "sidebar.border" }}
+          sx={{ color: "sidebar.text", borderColor: "sidebar.border" }}
         />
       </Stack>
       {areas.length === 0 ? (
@@ -76,58 +73,12 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
       ) : (
         <List disablePadding sx={{ display: "grid", gap: 1 }}>
           {filtered.map((area) => (
-            <ListItemButton
+            <AreaListItem
               key={area.slug}
-              component={Link}
-              href={buildHref({ sidebar: "areas", area: area.slug })}
+              area={area}
               selected={selectedSlug === area.slug}
-              data-testid={`cy-area-item-${area.slug}`}
-              sx={{
-                alignItems: "flex-start",
-                borderRadius: 3,
-                border: "1px solid rgba(182, 139, 70, 0.18)",
-                backgroundColor:
-                  selectedSlug === area.slug
-                    ? "rgba(164, 61, 36, 0.16)"
-                    : "rgba(255, 255, 255, 0.02)",
-                px: 1.5,
-                py: 1.25,
-                "&.Mui-selected": {
-                  borderColor: "rgba(182, 139, 70, 0.52)",
-                  backgroundColor: "rgba(164, 61, 36, 0.2)",
-                },
-                "&.Mui-selected:hover": {
-                  backgroundColor: "rgba(164, 61, 36, 0.24)",
-                },
-                "&:hover": {
-                  borderColor: "rgba(182, 139, 70, 0.4)",
-                  transform: "translateX(2px)",
-                },
-              }}
-            >
-              <Box sx={{ width: "100%" }}>
-                <Stack direction="row" spacing={1.25} alignItems="center" sx={{ mb: 0.75 }}>
-                  <Chip
-                    label={area.code}
-                    size="small"
-                    color="primary"
-                    sx={{ fontWeight: 700 }}
-                  />
-                  <Typography variant="subtitle2" sx={{ color: "common.white", fontWeight: 700 }}>
-                    {area.title}
-                  </Typography>
-                </Stack>
-                <ListItemText
-                  primary={null}
-                  secondary={area.description}
-                  secondaryTypographyProps={{
-                    color: "sidebar.mutedText",
-                    lineHeight: 1.55,
-                  }}
-                  sx={{ m: 0 }}
-                />
-              </Box>
-            </ListItemButton>
+              href={buildHref({ sidebar: "areas", area: area.slug })}
+            />
           ))}
         </List>
       )}

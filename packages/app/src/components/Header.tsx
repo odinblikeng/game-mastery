@@ -1,17 +1,21 @@
 "use client";
 
+import DarkModeRoundedIcon from "@mui/icons-material/DarkModeRounded";
+import LightModeRoundedIcon from "@mui/icons-material/LightModeRounded";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Chip from "@mui/material/Chip";
 import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { useColorScheme } from "@mui/material/styles";
 import useQueryParams from "@/hooks/useQueryParams";
 
 export default function Header() {
   const { get, has, set, remove } = useQueryParams();
+  const { mode, setMode } = useColorScheme();
   const isAreaSidebarOpen = get("sidebar") === "areas" || has("area");
   const isToolsSidebarOpen = has("tools");
 
@@ -33,6 +37,10 @@ export default function Header() {
     }
   };
 
+  const toggleColorMode = () => {
+    setMode(mode === "dark" ? "light" : "dark");
+  };
+
   return (
     <AppBar
       position="sticky"
@@ -40,9 +48,9 @@ export default function Header() {
       elevation={0}
       sx={{
         borderBottom: 1,
-        borderColor: "rgba(182, 139, 70, 0.35)",
+        borderColor: "chrome.border",
         backdropFilter: "blur(18px)",
-        boxShadow: "0 18px 40px rgba(0, 0, 0, 0.28)",
+        boxShadow: (t) => t.palette.chrome.shadow,
         "&::after": {
           content: '""',
           position: "absolute",
@@ -50,8 +58,7 @@ export default function Header() {
           bottom: 0,
           height: "1px",
           pointerEvents: "none",
-          background:
-            "linear-gradient(90deg, transparent 0%, rgba(182, 139, 70, 0.45) 18%, rgba(182, 139, 70, 0.8) 50%, rgba(182, 139, 70, 0.45) 82%, transparent 100%)",
+          background: (t) => t.palette.chrome.borderGlow,
         },
       }}
     >
@@ -72,10 +79,10 @@ export default function Header() {
                 borderRadius: 1.5,
                 display: "grid",
                 placeItems: "center",
-                border: "1px solid rgba(182, 139, 70, 0.55)",
-                background:
-                  "linear-gradient(180deg, rgba(174, 59, 33, 0.28), rgba(34, 22, 16, 0.92))",
-                color: "secondary.light",
+                border: 1,
+                borderColor: "chrome.logoBorder",
+                background: (t) => t.palette.chrome.logoBg,
+                color: "chrome.logoText",
                 fontFamily: "var(--font-display), serif",
                 fontSize: "1rem",
                 letterSpacing: "0.12em",
@@ -92,7 +99,7 @@ export default function Header() {
                 sx={{
                   border: 0,
                   background: "transparent",
-                  color: "common.white",
+                  color: "chrome.text",
                   cursor: "pointer",
                   p: 0,
                   textAlign: "left",
@@ -102,7 +109,7 @@ export default function Header() {
               </Typography>
               <Typography
                 variant="caption"
-                sx={{ color: "rgba(243, 233, 219, 0.72)", letterSpacing: "0.18em" }}
+                sx={{ color: "chrome.mutedText", letterSpacing: "0.18em" }}
               >
                 Campaign Command Screen
               </Typography>
@@ -124,7 +131,7 @@ export default function Header() {
               variant="outlined"
               data-testid="cy-header-dashboard-button"
               sx={{
-                color: "common.white",
+                color: "chrome.text",
                 whiteSpace: "nowrap",
               }}
             >
@@ -135,7 +142,7 @@ export default function Header() {
               variant={isAreaSidebarOpen ? "contained" : "outlined"}
               data-testid="cy-header-area-button"
               sx={{
-                color: isAreaSidebarOpen ? undefined : "common.white",
+                color: isAreaSidebarOpen ? undefined : "chrome.text",
                 whiteSpace: "nowrap",
               }}
             >
@@ -146,18 +153,25 @@ export default function Header() {
               variant={isToolsSidebarOpen ? "contained" : "outlined"}
               data-testid="cy-header-tools-button"
               sx={{
-                color: isToolsSidebarOpen ? undefined : "common.white",
+                color: isToolsSidebarOpen ? undefined : "chrome.text",
                 whiteSpace: "nowrap",
               }}
             >
               Session Tools
             </Button>
-            <Chip
-              label="Live Table"
-              color="secondary"
-              variant="outlined"
-              sx={{ alignSelf: { xs: "flex-start", md: "center" }, color: "common.white" }}
-            />
+            <IconButton
+              onClick={toggleColorMode}
+              aria-label={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              data-testid="cy-header-theme-toggle"
+              sx={{
+                alignSelf: { xs: "flex-start", md: "center" },
+                color: "chrome.text",
+                border: 1,
+                borderColor: "chrome.border",
+              }}
+            >
+              {mode === "dark" ? <LightModeRoundedIcon /> : <DarkModeRoundedIcon />}
+            </IconButton>
           </Stack>
         </Toolbar>
       </Container>

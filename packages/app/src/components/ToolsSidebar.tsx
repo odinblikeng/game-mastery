@@ -56,7 +56,7 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
             onClick={goBack}
             aria-label="Back to tools"
             data-testid="cy-tools-back-button"
-            sx={{ border: 1, borderColor: "sidebar.border", color: "common.white" }}
+            sx={{ border: 1, borderColor: "sidebar.border", color: "sidebar.text" }}
             >
             <ArrowBackRoundedIcon />
             </IconButton>
@@ -79,7 +79,7 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
         Table-side utilities registered in the command rail.
         </Typography>
         </Box>
-        <Chip label="1 Live" size="small" color="secondary" variant="outlined" sx={{ color: "common.white" }} />
+        <Chip label="1 Live" size="small" color="secondary" variant="outlined" sx={{ color: "sidebar.text" }} />
         </Stack>
         <List disablePadding data-testid="cy-tools-menu" sx={{ display: "grid", gap: 1 }}>
         {toolRegistry.map(({ slug, label, description, icon: Icon }) => (
@@ -88,11 +88,12 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
             data-testid={`cy-tool-item-${slug}`}
             sx={{
                 borderRadius: 3,
-                border: "1px solid rgba(182, 139, 70, 0.18)",
+                border: 1,
+                borderColor: "sidebar.itemBorder",
                 px: 1.5,
                 py: 1.25,
                 "&:hover": {
-                    borderColor: "rgba(182, 139, 70, 0.42)",
+                    borderColor: "sidebar.itemBorderHover",
                     transform: "translateX(2px)",
                 },
             }}
@@ -104,7 +105,7 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
             <ListItemText
             primary={label}
             secondary={description}
-            primaryTypographyProps={{ color: "common.white", fontWeight: 700 }}
+            primaryTypographyProps={{ color: "sidebar.text", fontWeight: 700 }}
             secondaryTypographyProps={{ color: "sidebar.mutedText", lineHeight: 1.5 }}
             />
             </ListItemButton>
