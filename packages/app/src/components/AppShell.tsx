@@ -10,13 +10,15 @@ import Header from "@/components/Header";
 import SidebarPanel from "@/components/SidebarPanel";
 import ToolsSidebar from "@/components/ToolsSidebar";
 import useQueryParams from "@/hooks/useQueryParams";
+import type { MonsterSummary } from "@/types/monster";
 
 type AppShellProps = {
   areas: AreaMeta[];
+  monsters: MonsterSummary[];
   children: ReactNode;
 };
 
-export default function AppShell({ areas, children }: AppShellProps) {
+export default function AppShell({ areas, monsters, children }: AppShellProps) {
   const { get, remove } = useQueryParams();
   const isHydrated = useSyncExternalStore(
     () => () => {},
@@ -68,7 +70,7 @@ export default function AppShell({ areas, children }: AppShellProps) {
               onClose={() => remove("tools")}
               closeButtonTestId="cy-tools-sidebar-close"
             >
-              <ToolsSidebar tool={toolsParam} />
+              <ToolsSidebar tool={toolsParam} monsters={monsters} />
             </SidebarPanel>
           ) : null}
         </Box>

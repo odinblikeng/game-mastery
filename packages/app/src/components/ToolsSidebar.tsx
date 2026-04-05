@@ -15,9 +15,15 @@ import Typography from "@mui/material/Typography";
 import type { ComponentType } from "react";
 import InitiativeTracker from "@/components/InitiativeTracker";
 import useQueryParams from "@/hooks/useQueryParams";
+import type { MonsterSummary } from "@/types/monster";
 
 type ToolsSidebarProps = {
     tool?: string;
+    monsters: MonsterSummary[];
+};
+
+type ToolComponentProps = {
+    monsters: MonsterSummary[];
 };
 
 type ToolDefinition = {
@@ -25,20 +31,20 @@ type ToolDefinition = {
     label: string;
     description: string;
     icon: SvgIconComponent;
-    component: ComponentType;
+    component: ComponentType<ToolComponentProps>;
 };
 
 const toolRegistry: ToolDefinition[] = [
     {
         slug: "initiative",
         label: "Initiative",
-        description: "Track turn order, rounds, and death saves without leaving the encounter flow.",
+        description: "Track turn order, rounds, death saves, and monster HP without leaving the encounter flow.",
         icon: CasinoRoundedIcon,
         component: InitiativeTracker,
     },
 ];
 
-export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
+export default function ToolsSidebar({ tool, monsters }: ToolsSidebarProps) {
     const { set } = useQueryParams();
     const activeTool = toolRegistry.find(({ slug }) => slug === tool);
     
@@ -65,7 +71,7 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
             <Typography variant="body2" sx={{ mb: 2.5, color: "sidebar.mutedText" }}>
             {activeTool.description}
             </Typography>
-            <ActiveTool />
+            <ActiveTool monsters={monsters} />
             </>
         );
     }

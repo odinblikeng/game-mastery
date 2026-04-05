@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import AppShell from "@/components/AppShell";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import { getAreaList } from "@/lib/areas";
+import { getMonsterList } from "@/lib/monsters";
 import "./globals.css";
 
 const bodyFont = Alegreya_Sans({
@@ -32,6 +33,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const areas = await getAreaList();
+  const monsters = await getMonsterList();
 
   return (
     <html
@@ -43,7 +45,7 @@ export default async function RootLayout({
         <InitColorSchemeScript attribute="class" />
         <ThemeRegistry>
           <Suspense fallback={<main className="app-main">{children}</main>}>
-            <AppShell areas={areas}>{children}</AppShell>
+            <AppShell areas={areas} monsters={monsters}>{children}</AppShell>
           </Suspense>
         </ThemeRegistry>
       </body>

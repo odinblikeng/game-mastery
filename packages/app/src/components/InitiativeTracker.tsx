@@ -22,16 +22,20 @@ import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import DragIndicatorRoundedIcon from "@mui/icons-material/DragIndicatorRounded";
+import PetsRoundedIcon from "@mui/icons-material/PetsRounded";
 import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import SvgIcon from "@mui/material/SvgIcon";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { useId, useRef, useState } from "react";
+import type { MonsterSummary } from "@/types/monster";
 
 function SkullIcon(props: React.ComponentProps<typeof SvgIcon>) {
   return (
@@ -46,6 +50,9 @@ type Character = {
   name: string;
   bonus: number;
   roll: number | "";
+  maxHp?: number;
+  monsterSlug?: string;
+  copyIndex?: number;
 };
 
 type ResolvedCharacter = {
@@ -56,6 +63,16 @@ type ResolvedCharacter = {
   dying: boolean;
   successes: number;
   failures: number;
+  hp?: number;
+  maxHp?: number;
+  monsterSlug?: string;
+  copyIndex?: number;
+};
+
+type MonsterNamedEntry = {
+  name: string;
+  monsterSlug?: string;
+  copyIndex?: number;
 };
 
 const toTestId = (value: string) =>
@@ -63,6 +80,41 @@ const toTestId = (value: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+
+const renumberMonsterCopies = <T extends MonsterNamedEntry>(
+  items: T[],
+  monsterNameBySlug: Map<string, string>,
+): T[] => {
+  const totals = new Map<string, number>();
+
+  for (const item of items) {
+    if (!item.monsterSlug) {
+      continue;
+    }
+
+    totals.set(item.monsterSlug, (totals.get(item.monsterSlug) ?? 0) + 1);
+  }
+
+  const seen = new Map<string, number>();
+
+  return items.map((item) => {
+    if (!item.monsterSlug) {
+      return item;
+    }
+
+    const total = totals.get(item.monsterSlug) ?? 0;
+    const baseName = monsterNameBySlug.get(item.monsterSlug) ?? item.name.replace(/ \d+$/, "");
+    const index = (seen.get(item.monsterSlug) ?? 0) + 1;
+    const nextName = total > 1 ? `${baseName} ${index}` : baseName;
+    const nextCopyIndex = total > 1 ? index : undefined;
+
+    seen.set(item.monsterSlug, index);
+
+    return item.name === nextName && item.copyIndex === nextCopyIndex
+      ? item
+      : { ...item, name: nextName, copyIndex: nextCopyIndex };
+  });
+};
 
 /* ------------------------------------------------------------------ */
 /*  Sortable row used after Ready                                     */
@@ -73,12 +125,14 @@ function SortableRow({
   isActive,
   onDelete,
   onToggleDying,
+  onSetHp,
   onUpdateSaves,
 }: {
   char: ResolvedCharacter;
   isActive: boolean;
   onDelete: (id: string) => void;
   onToggleDying: (id: string) => void;
+  onSetHp: (id: string, value: string) => void;
   onUpdateSaves: (id: string, field: "successes" | "failures", delta: number) => void;
 }) {
   const {
@@ -96,8 +150,13 @@ function SortableRow({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const isSkipped = char.dying && char.failures >= 3;
-  const isStabilized = char.dying && char.successes >= 3;
+  const isMonster = typeof char.maxHp === "number";
+  const currentHp = isMonster ? (char.hp ?? char.maxHp) : null;
+  const isSkipped = isMonster ? (currentHp ?? 0) <= 0 : char.dying && char.failures >= 3;
+  const isStabilized = !isMonster && char.dying && char.successes >= 3;
+  const baseDisplayName = char.copyIndex != null
+    ? char.name.replace(/ \d+$/, "")
+    : char.name;
 
   return (
     <Stack
@@ -114,15 +173,15 @@ function SortableRow({
         px: 1,
         borderRadius: 2,
         flexWrap: "wrap",
-        ...(isActive && !char.dying && {
+        ...(isActive && !isSkipped && !char.dying && {
           bgcolor: "primary.main",
           color: "primary.contrastText",
         }),
-        ...(isActive && char.dying && {
+        ...(isActive && !isMonster && char.dying && {
           border: 2,
           borderColor: "primary.main",
         }),
-        ...(char.dying && {
+        ...((char.dying || isSkipped) && {
           opacity: isSkipped ? 0.3 : 0.55,
           ...(isSkipped && { textDecoration: "line-through" }),
         }),
@@ -135,22 +194,61 @@ function SortableRow({
       >
         <DragIndicatorRoundedIcon fontSize="small" />
       </Box>
-      <Typography sx={{ flex: 1, fontWeight: isActive && !char.dying ? 700 : 400 }}>
-        {char.name}
+      <Typography sx={{ flex: 1, fontWeight: isActive && !char.dying ? 700 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+        {baseDisplayName}
       </Typography>
+      {char.copyIndex != null ? (
+        <Chip label={`#${char.copyIndex}`} size="small" variant="outlined" sx={{ fontWeight: 700 }} />
+      ) : null}
+      {isMonster ? (
+        <Stack direction="row" alignItems="center" spacing={0.75}>
+          <Typography variant="caption" sx={{ fontWeight: 700 }}>
+            HP
+          </Typography>
+          <TextField
+            size="small"
+            type="number"
+            value={currentHp ?? ""}
+            onChange={(event) => onSetHp(char.id, event.target.value)}
+            sx={{
+              width: 78,
+              "& .MuiInputBase-root": {
+                height: 32,
+                color: "inherit",
+              },
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderColor: "currentColor",
+              },
+            }}
+            slotProps={{
+              htmlInput: {
+                min: 0,
+                max: char.maxHp,
+                "aria-label": `Current HP for ${char.name}`,
+                "data-testid": `cy-initiative-hp-${toTestId(char.name)}`,
+              },
+            }}
+          />
+          <Typography variant="caption" sx={{ minWidth: 38 }}>
+            / {char.maxHp}
+          </Typography>
+        </Stack>
+      ) : null}
       <Typography
         sx={{ fontWeight: 700, minWidth: 32, textAlign: "right" }}
       >
         {char.total}
       </Typography>
-      <IconButton
-        size="small"
-        onClick={() => onToggleDying(char.id)}
-        sx={{ color: char.dying ? "error.main" : "inherit" }}
-        aria-label={char.dying ? `Revive ${char.name}` : `Mark ${char.name} as dying`}
-      >
-        <SkullIcon fontSize="small" />
-      </IconButton>
+      {!isMonster ? (
+        <IconButton
+          size="small"
+          onClick={() => onToggleDying(char.id)}
+          sx={{ color: char.dying ? "error.main" : "inherit" }}
+          aria-label={char.dying ? `Revive ${char.name}` : `Mark ${char.name} as dying`}
+        >
+          <SkullIcon fontSize="small" />
+        </IconButton>
+      ) : null}
       <IconButton
         size="small"
         onClick={() => onDelete(char.id)}
@@ -159,7 +257,7 @@ function SortableRow({
       >
         <CloseRoundedIcon fontSize="small" />
       </IconButton>
-      {char.dying && !isStabilized && !isSkipped && (
+      {!isMonster && char.dying && !isStabilized && !isSkipped && (
         <Stack
           direction="row"
           alignItems="center"
@@ -220,7 +318,7 @@ function SortableRow({
       )}
       {isSkipped && (
         <Typography variant="caption" color="error.main" sx={{ width: "100%", pl: 3.5 }}>
-          Dead
+          {isMonster ? "Defeated" : "Dead"}
         </Typography>
       )}
     </Stack>
@@ -231,10 +329,12 @@ function SortableRow({
 /*  Main component                                                     */
 /* ------------------------------------------------------------------ */
 
-export default function InitiativeTracker() {
+export default function InitiativeTracker({ monsters }: { monsters: MonsterSummary[] }) {
   const baseId = useId();
+  const nextIdRef = useRef(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const shouldRefocusNameInputRef = useRef(false);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [resolved, setResolved] = useState<ResolvedCharacter[]>([]);
   const [isReady, setIsReady] = useState(false);
@@ -245,6 +345,9 @@ export default function InitiativeTracker() {
   /* form state for adding a new character */
   const [newName, setNewName] = useState("");
   const [newBonus, setNewBonus] = useState("");
+  const [monsterMenuAnchor, setMonsterMenuAnchor] = useState<HTMLElement | null>(null);
+
+  const monsterNameBySlug = new Map(monsters.map((monster) => [monster.slug, monster.name]));
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -255,7 +358,10 @@ export default function InitiativeTracker() {
 
   /* ---- helpers ---- */
 
-  const nextId = () => `${baseId}-${Date.now()}-${Math.random()}`;
+  const nextId = () => {
+    nextIdRef.current += 1;
+    return `${baseId}-${nextIdRef.current}`;
+  };
 
   const handleColumnTab = (
     e: React.KeyboardEvent,
@@ -307,6 +413,36 @@ export default function InitiativeTracker() {
     nameInputRef.current?.focus();
   };
 
+  const addMonsterCharacter = (monster: MonsterSummary) => {
+    setCharacters((prev) =>
+      renumberMonsterCopies(
+        [
+          ...prev,
+          {
+            id: nextId(),
+            name: monster.name,
+            bonus: monster.dexModifier,
+            roll: "",
+            maxHp: monster.hp,
+            monsterSlug: monster.slug,
+          },
+        ],
+        monsterNameBySlug,
+      ),
+    );
+    shouldRefocusNameInputRef.current = true;
+    setMonsterMenuAnchor(null);
+  };
+
+  const handleMonsterMenuExited = () => {
+    if (!shouldRefocusNameInputRef.current) {
+      return;
+    }
+
+    shouldRefocusNameInputRef.current = false;
+    nameInputRef.current?.focus();
+  };
+
   const updateCharacter = (
     id: string,
     field: "name" | "bonus" | "roll",
@@ -326,14 +462,22 @@ export default function InitiativeTracker() {
   const deleteCharacter = (id: string) => {
     if (isReady) {
       setResolved((prev) => {
-        const next = prev.filter((c) => c.id !== id);
+        const next = renumberMonsterCopies(
+          prev.filter((c) => c.id !== id),
+          monsterNameBySlug,
+        );
         setActiveIndex((i) =>
           next.length === 0 ? 0 : Math.min(i, next.length - 1),
         );
         return next;
       });
     } else {
-      setCharacters((prev) => prev.filter((c) => c.id !== id));
+      setCharacters((prev) =>
+        renumberMonsterCopies(
+          prev.filter((c) => c.id !== id),
+          monsterNameBySlug,
+        ),
+      );
     }
   };
 
@@ -347,6 +491,10 @@ export default function InitiativeTracker() {
         dying: false,
         successes: 0,
         failures: 0,
+        hp: c.maxHp,
+        maxHp: c.maxHp,
+        monsterSlug: c.monsterSlug,
+        copyIndex: c.copyIndex,
       }))
       .sort((a, b) => {
         if (b.total !== a.total) return b.total - a.total;
@@ -368,10 +516,31 @@ export default function InitiativeTracker() {
   const toggleDying = (id: string) => {
     setResolved((prev) =>
       prev.map((c) =>
-        c.id === id
+        c.id === id && typeof c.maxHp !== "number"
           ? { ...c, dying: !c.dying, successes: 0, failures: 0 }
           : c,
       ),
+    );
+  };
+
+  const setHp = (id: string, value: string) => {
+    setResolved((prev) =>
+      prev.map((c) => {
+        if (c.id !== id || typeof c.maxHp !== "number") {
+          return c;
+        }
+
+        const nextValue = value === "" ? 0 : Number(value);
+
+        if (Number.isNaN(nextValue)) {
+          return c;
+        }
+
+        return {
+          ...c,
+          hp: Math.max(0, Math.min(c.maxHp, nextValue)),
+        };
+      }),
     );
   };
 
@@ -401,7 +570,7 @@ export default function InitiativeTracker() {
   };
 
   const isCharDead = (c: ResolvedCharacter) =>
-    c.dying && c.failures >= 3;
+    typeof c.maxHp === "number" ? (c.hp ?? c.maxHp) <= 0 : c.dying && c.failures >= 3;
 
   const formatTime = (turns: number) => {
     const seconds = turns * 6;
@@ -445,6 +614,7 @@ export default function InitiativeTracker() {
                 isActive={index === activeIndex}
                 onDelete={deleteCharacter}
                 onToggleDying={toggleDying}
+                onSetHp={setHp}
                 onUpdateSaves={updateSaves}
               />
             ))}
@@ -550,7 +720,45 @@ export default function InitiativeTracker() {
         >
           <AddRoundedIcon />
         </IconButton>
+        {monsters.length > 0 ? (
+          <IconButton
+            onClick={(event) => setMonsterMenuAnchor(event.currentTarget)}
+            color="secondary"
+            aria-label="Add monster"
+            data-testid="cy-initiative-add-monster"
+          >
+            <PetsRoundedIcon />
+          </IconButton>
+        ) : null}
       </Stack>
+      <Menu
+        anchorEl={monsterMenuAnchor}
+        open={Boolean(monsterMenuAnchor)}
+        onClose={() => setMonsterMenuAnchor(null)}
+        disableRestoreFocus
+        slotProps={{
+          transition: {
+            onExited: handleMonsterMenuExited,
+          },
+        }}
+      >
+        {monsters.map((monster) => (
+          <MenuItem
+            key={monster.slug}
+            onClick={() => addMonsterCharacter(monster)}
+            data-testid={`cy-initiative-monster-option-${toTestId(monster.name)}`}
+          >
+            <Stack spacing={0.25}>
+              <Typography variant="body2" fontWeight={700}>
+                {monster.name}
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Bonus {monster.dexModifier >= 0 ? `+${monster.dexModifier}` : monster.dexModifier} · HP {monster.hp}
+              </Typography>
+            </Stack>
+          </MenuItem>
+        ))}
+      </Menu>
 
       {/* Character list */}
       {characters.length > 0 && (
@@ -564,9 +772,21 @@ export default function InitiativeTracker() {
               alignItems="center"
               sx={{ px: 1 }}
             >
-              <Typography sx={{ flex: 1, fontSize: "0.875rem" }}>
-                {char.name}
+              <Typography sx={{ flex: 1, fontSize: "0.875rem", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+                {char.copyIndex != null ? char.name.replace(/ \d+$/, '') : char.name}
               </Typography>
+              {char.copyIndex != null ? (
+                <Chip label={`#${char.copyIndex}`} size="small" variant="outlined" sx={{ fontWeight: 700 }} />
+              ) : null}
+              {typeof char.maxHp === "number" ? (
+                <Chip
+                  label={`HP ${char.maxHp}`}
+                  size="small"
+                  color="secondary"
+                  variant="outlined"
+                  data-testid={`cy-initiative-setup-hp-${toTestId(char.name)}`}
+                />
+              ) : null}
               <TextField
                 size="small"
                 type="number"
