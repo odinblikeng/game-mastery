@@ -122,6 +122,7 @@ export default function Header() {
               color="inherit"
               onClick={navigateHome}
               variant="outlined"
+              data-testid="cy-header-dashboard-button"
               sx={{
                 color: "common.white",
                 whiteSpace: "nowrap",
@@ -132,6 +133,7 @@ export default function Header() {
             <Button
               onClick={toggleAreasSidebar}
               variant={isAreaSidebarOpen ? "contained" : "outlined"}
+              data-testid="cy-header-area-button"
               sx={{
                 color: isAreaSidebarOpen ? undefined : "common.white",
                 whiteSpace: "nowrap",
@@ -142,6 +144,7 @@ export default function Header() {
             <Button
               onClick={toggleToolsSidebar}
               variant={isToolsSidebarOpen ? "contained" : "outlined"}
+              data-testid="cy-header-tools-button"
               sx={{
                 color: isToolsSidebarOpen ? undefined : "common.white",
                 whiteSpace: "nowrap",

@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Game Mastery
+
+Game Mastery is a GM-facing workspace for running tabletop RPG campaigns. The app keeps area notes, session prep, and table-side tools in one place.
+
+This repository is organized as an npm workspaces monorepo and is currently documented for Windows development.
+
+## Prerequisites
+
+- Node.js 20+
+- npm 10+
+- PowerShell or Command Prompt on Windows
+
+Use `npm.cmd` in terminal commands in this environment. PowerShell can block `npm.ps1` through execution policy, while `npm.cmd` works consistently.
+
+## Repository Structure
+
+```text
+game-mastery/
+|-- packages/
+|   |-- app/            # Next.js 16 application
+|   |   |-- public/
+|   |   |-- src/
+|   |   |-- eslint.config.mjs
+|   |   |-- mdx-components.tsx
+|   |   |-- next.config.ts
+|   |   |-- package.json
+|   |   `-- tsconfig.json
+|   `-- e2e/            # Cypress end-to-end tests
+|       |-- cypress/
+|       |   |-- e2e/
+|       |   `-- support/
+|       |-- cypress.config.ts
+|       |-- package.json
+|       `-- tsconfig.json
+|-- .github/
+|-- .vscode/
+|-- .gitignore
+|-- package.json        # Workspace root commands
+`-- README.md
+```
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies from the repository root:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```powershell
+npm.cmd install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start the app:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```powershell
+npm.cmd run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open `http://localhost:3000` in your browser.
 
-## Learn More
+## Root Commands
 
-To learn more about Next.js, take a look at the following resources:
+Run all commands from the repository root unless noted otherwise.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Command | What it does |
+|---|---|
+| `npm.cmd run dev` | Starts the Next.js app from `packages/app` in development mode |
+| `npm.cmd run build` | Builds the Next.js app for production |
+| `npm.cmd run start` | Starts the built Next.js app |
+| `npm.cmd run lint` | Runs ESLint for the app workspace |
+| `npm.cmd run test:e2e` | Runs Cypress end-to-end tests in headless mode |
+| `npm.cmd run test:e2e:open` | Opens the Cypress interactive runner |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Workspace Commands
 
-## Deploy on Vercel
+If you need to target one workspace directly:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```powershell
+npm.cmd -w app run dev
+npm.cmd -w app run build
+npm.cmd -w app run lint
+npm.cmd -w e2e run cy:open
+npm.cmd -w e2e run cy:run
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Running End-to-End Tests
+
+Use two terminals.
+
+Terminal 1:
+
+```powershell
+npm.cmd run dev
+```
+
+Terminal 2:
+
+```powershell
+npm.cmd run test:e2e
+```
+
+For the Cypress UI instead of headless mode:
+
+```powershell
+npm.cmd run test:e2e:open
+```
+
+## Notes
+
+- The Next.js application lives in `packages/app`.
+- Cypress specs and support files live in `packages/e2e`.
+- The root package only coordinates workspace commands.

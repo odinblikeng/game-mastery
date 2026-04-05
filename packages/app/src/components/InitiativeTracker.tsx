@@ -58,6 +58,12 @@ type ResolvedCharacter = {
   failures: number;
 };
 
+const toTestId = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 /* ------------------------------------------------------------------ */
 /*  Sortable row used after Ready                                     */
 /* ------------------------------------------------------------------ */
@@ -97,6 +103,9 @@ function SortableRow({
     <Stack
       ref={setNodeRef}
       style={style}
+      data-testid={`cy-initiative-row-${toTestId(char.name)}`}
+      data-active={isActive ? "true" : "false"}
+      data-state={isSkipped ? "dead" : isStabilized ? "stabilized" : char.dying ? "dying" : "ready"}
       direction="row"
       alignItems="center"
       spacing={1}
@@ -170,6 +179,7 @@ function SortableRow({
             size="small"
             color={char.successes > char.failures ? "success" : char.failures > char.successes ? "error" : "default"}
             variant="outlined"
+            data-testid={`cy-initiative-saves-${toTestId(char.name)}`}
             sx={{ fontWeight: 700, minWidth: 48 }}
           />
           <IconButton
@@ -409,10 +419,12 @@ export default function InitiativeTracker() {
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Stack>
             <Typography variant="subtitle2" color="text.secondary">
+              <span data-testid="cy-initiative-round-status">
               Round {round} &middot; {formatTime(totalTurns)}
+              </span>
             </Typography>
           </Stack>
-          <Button size="small" onClick={handleReset}>
+          <Button size="small" onClick={handleReset} data-testid="cy-initiative-reset-button">
             Reset
           </Button>
         </Stack>
@@ -470,10 +482,11 @@ export default function InitiativeTracker() {
                 setTotalTurns((t) => Math.max(0, t - 1));
               }}
               aria-label="Previous turn"
+              data-testid="cy-initiative-previous-turn"
             >
               <ChevronLeftRoundedIcon />
             </IconButton>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" data-testid="cy-initiative-turn-status">
               Turn {activeIndex + 1} / {resolved.length}
             </Typography>
             <IconButton
@@ -489,6 +502,7 @@ export default function InitiativeTracker() {
                 setTotalTurns((t) => t + 1);
               }}
               aria-label="Next turn"
+              data-testid="cy-initiative-next-turn"
             >
               <ChevronRightRoundedIcon />
             </IconButton>
@@ -513,6 +527,7 @@ export default function InitiativeTracker() {
           onKeyDown={(e) => {
             if (e.key === "Enter") addCharacter();
           }}
+          slotProps={{ htmlInput: { "data-testid": "cy-initiative-name-input" } }}
           sx={{ flex: 1 }}
         />
         <TextField
@@ -524,9 +539,15 @@ export default function InitiativeTracker() {
           onKeyDown={(e) => {
             if (e.key === "Enter") addCharacter();
           }}
+          slotProps={{ htmlInput: { "data-testid": "cy-initiative-bonus-input" } }}
           sx={{ width: 72 }}
         />
-        <IconButton onClick={addCharacter} color="primary" aria-label="Add character">
+        <IconButton
+          onClick={addCharacter}
+          color="primary"
+          aria-label="Add character"
+          data-testid="cy-initiative-add-character"
+        >
           <AddRoundedIcon />
         </IconButton>
       </Stack>
@@ -537,6 +558,7 @@ export default function InitiativeTracker() {
           {characters.map((char, idx) => (
             <Stack
               key={char.id}
+              data-testid={`cy-initiative-setup-${toTestId(char.name)}`}
               direction="row"
               spacing={1}
               alignItems="center"
@@ -584,7 +606,7 @@ export default function InitiativeTracker() {
 
       {/* Ready button */}
       {characters.length > 0 && (
-        <Button variant="contained" onClick={handleReady} fullWidth>
+        <Button variant="contained" onClick={handleReady} fullWidth data-testid="cy-initiative-ready-button">
           Ready
         </Button>
       )}

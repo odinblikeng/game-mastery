@@ -44,6 +44,7 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
         fullWidth
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        slotProps={{ htmlInput: { "data-testid": "cy-area-search-input" } }}
         sx={{ mb: 1.5 }}
       />
       <Stack
@@ -60,6 +61,7 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
           label={`${filtered.length} ${filtered.length === 1 ? "entry" : "entries"}`}
           size="small"
           variant="outlined"
+          data-testid="cy-area-count-chip"
           sx={{ color: "common.white", borderColor: "sidebar.border" }}
         />
       </Stack>
@@ -79,6 +81,7 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
               component={Link}
               href={buildHref({ sidebar: "areas", area: area.slug })}
               selected={selectedSlug === area.slug}
+              data-testid={`cy-area-item-${area.slug}`}
               sx={{
                 alignItems: "flex-start",
                 borderRadius: 3,

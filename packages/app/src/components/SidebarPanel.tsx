@@ -9,12 +9,14 @@ import type { ReactNode } from "react";
 type SidebarPanelProps = {
   width?: number;
   onClose: () => void;
+  closeButtonTestId?: string;
   children: ReactNode;
 };
 
 export default function SidebarPanel({
   width = 340,
   onClose,
+  closeButtonTestId,
   children,
 }: SidebarPanelProps) {
   return (
@@ -46,6 +48,7 @@ export default function SidebarPanel({
           size="small"
           onClick={onClose}
           aria-label="Close sidebar"
+          data-testid={closeButtonTestId}
           sx={{
             position: "absolute",
             top: 8,

@@ -2,6 +2,7 @@
 
 import Box from "@mui/material/Box";
 import type { ReactNode } from "react";
+import { useSyncExternalStore } from "react";
 import type { AreaMeta } from "@/lib/areas";
 import AreaSidebar from "@/components/AreaSidebar";
 import Footer from "@/components/Footer";
@@ -17,6 +18,11 @@ type AppShellProps = {
 
 export default function AppShell({ areas, children }: AppShellProps) {
   const { get, remove } = useQueryParams();
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const selectedSlug = get("area") ?? undefined;
   const showAreaSidebar =
     get("sidebar") === "areas" || Boolean(selectedSlug);
@@ -24,7 +30,7 @@ export default function AppShell({ areas, children }: AppShellProps) {
   const showToolsSidebar = Boolean(toolsParam);
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-testid="cy-app-shell" data-hydrated={isHydrated ? "true" : "false"}>
       <Header />
       <Box
         sx={{
@@ -45,7 +51,11 @@ export default function AppShell({ areas, children }: AppShellProps) {
           }}
         >
           {showAreaSidebar ? (
-            <SidebarPanel width={340} onClose={() => remove("sidebar", "area")}>
+            <SidebarPanel
+              width={340}
+              onClose={() => remove("sidebar", "area")}
+              closeButtonTestId="cy-area-sidebar-close"
+            >
               <AreaSidebar areas={areas} selectedSlug={selectedSlug} />
             </SidebarPanel>
           ) : null}
@@ -53,7 +63,11 @@ export default function AppShell({ areas, children }: AppShellProps) {
             {children}
           </Box>
           {showToolsSidebar ? (
-            <SidebarPanel width={360} onClose={() => remove("tools")}>
+            <SidebarPanel
+              width={360}
+              onClose={() => remove("tools")}
+              closeButtonTestId="cy-tools-sidebar-close"
+            >
               <ToolsSidebar tool={toolsParam} />
             </SidebarPanel>
           ) : null}
