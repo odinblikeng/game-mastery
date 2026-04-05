@@ -48,3 +48,6 @@ next-env.d.ts
 packages/e2e/cypress/videos
 packages/e2e/cypress/screenshots
 packages/e2e/cypress/downloads
+
+# idea
+.vscode/
