@@ -2,7 +2,7 @@ import "server-only";
 
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import type { MonsterData, MonsterSummary } from "@/types/monster";
+import type { MonsterData, MonsterDataMap, MonsterSummary } from "@/types/monster";
 
 const monsterDirectoryPath = join(process.cwd(), "src", "content", "monsters");
 
@@ -79,4 +79,17 @@ async function loadMonsterList(): Promise<MonsterSummary[]> {
 
 export async function getMonsterList(): Promise<MonsterSummary[]> {
   return loadMonsterList();
+}
+
+export async function getMonster(slug: string): Promise<MonsterData> {
+  return importMonster(slug);
+}
+
+export async function getMonsterDataMap(slugs: string[]): Promise<MonsterDataMap> {
+  const uniqueSlugs = [...new Set(slugs)];
+  const monsters = await Promise.all(
+    uniqueSlugs.map(async (slug) => [slug, await getMonster(slug)] as const),
+  );
+
+  return Object.fromEntries(monsters);
 }

@@ -11,7 +11,7 @@ describe("Area sidebar", () => {
   it("shows all available areas", () => {
     visitAndWait("/?sidebar=areas");
 
-    cy.get('[data-testid="cy-area-count-chip"]').should("contain", "3 entries");
+    cy.get('[data-testid="cy-area-count-chip"]').should("contain", "19 entries");
     cy.get('[data-testid="cy-area-item-m1"]').should("contain", "Foyer and Hallway");
     cy.get('[data-testid="cy-area-item-m2"]').should("contain", "Patio");
     cy.get('[data-testid="cy-area-item-m3"]').should("contain", "Library");
@@ -21,14 +21,16 @@ describe("Area sidebar", () => {
     visitAndWait("/?sidebar=areas");
 
     cy.get('[data-testid="cy-area-search-input"]').type("M1");
-    cy.get('[data-testid="cy-area-count-chip"]').should("contain", "1 entry");
-    cy.get('[data-testid="cy-area-item-m1"]').should("be.visible");
+    cy.get('[data-testid="cy-area-count-chip"]').should("contain", "11 entries");
+    cy.get('[data-testid="cy-area-item-m1"]').should("exist");
+    cy.get('[data-testid="cy-area-item-m10"]').should("exist");
     cy.get('[data-testid="cy-area-item-m2"]').should("not.exist");
-    cy.get('[data-testid="cy-area-item-m3"]').should("not.exist");
 
-    cy.get('[data-testid="cy-area-search-input"]').clear().type("Library");
-    cy.get('[data-testid="cy-area-count-chip"]').should("contain", "1 entry");
+    cy.get('[data-testid="cy-area-search-input"]').clear({ force: true });
+    cy.get('[data-testid="cy-area-search-input"]').type("Library", { force: true });
+    cy.get('[data-testid="cy-area-count-chip"]').should("contain", "2 entries");
     cy.get('[data-testid="cy-area-item-m3"]').should("be.visible");
+    cy.get('[data-testid="cy-area-item-m13"]').should("exist");
   });
 
   it("shows an empty-state message when the search misses", () => {

@@ -5,6 +5,7 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import AreaMonsterList from "@/components/AreaMonsterList";
 import { getArea, getAreaList } from "@/lib/areas";
 
 type HomeProps = {
@@ -52,6 +53,7 @@ export default async function Home({ searchParams }: HomeProps) {
               <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 760 }}>
                 {selectedArea.description}
               </Typography>
+                {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
             </Stack>
             <Divider />
             <Box sx={{ "& > :last-child": { mb: 0 } }}>

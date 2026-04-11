@@ -4,6 +4,7 @@ import Typography from "@mui/material/Typography";
 import type { ReactNode } from "react";
 import type { MDXComponents } from "mdx/types";
 import NextLink from "next/link";
+import MonsterReference from "@/components/MonsterReference";
 
 function Callout({
   title,
@@ -87,5 +88,6 @@ export function useMDXComponents(): MDXComponents {
     ol: (props) => <Box component="ol" sx={{ mb: 2, mt: 0, pl: 3 }} {...props} />,
     li: (props) => <Box component="li" sx={{ lineHeight: 1.7, mb: 0.5 }} {...props} />,
     Callout,
+    Monster: MonsterReference,
   };
 }

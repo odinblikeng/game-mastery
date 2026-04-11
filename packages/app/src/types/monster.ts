@@ -52,3 +52,5 @@ export type MonsterSummary = {
   dexModifier: number;
   hp: number;
 };
+
+export type MonsterDataMap = Record<string, MonsterData>;

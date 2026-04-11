@@ -7,7 +7,14 @@ import type { MonsterSummary } from "@/types/monster";
 import type { Character, ResolvedCharacter } from "@/types/initiative";
 import { isCharDead, renumberMonsterCopies } from "@/lib/initiative";
 
-export default function useInitiativeTracker(monsters: MonsterSummary[]) {
+type PendingMonsterQueue = {
+  pendingMonsters: MonsterSummary[];
+};
+
+export default function useInitiativeTracker(
+  monsters: MonsterSummary[],
+  pendingQueue?: PendingMonsterQueue,
+) {
   const baseId = useId();
   const nextIdRef = useRef(0);
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -22,6 +29,8 @@ export default function useInitiativeTracker(monsters: MonsterSummary[]) {
   const [newName, setNewName] = useState("");
   const [newBonus, setNewBonus] = useState("");
   const [monsterMenuAnchor, setMonsterMenuAnchor] = useState<HTMLElement | null>(null);
+  const [queuedSetupCount, setQueuedSetupCount] = useState(0);
+  const [processedPendingCount, setProcessedPendingCount] = useState(0);
 
   const monsterNameBySlug = new Map(monsters.map((monster) => [monster.slug, monster.name]));
 
@@ -265,6 +274,31 @@ export default function useInitiativeTracker(monsters: MonsterSummary[]) {
     setMonsterMenuAnchor(null);
   };
 
+  // Process pending monsters from the overlay context during render.
+  // Uses "adjust state during render" pattern — no refs, converges in one extra render.
+  const pendingMonsters = pendingQueue?.pendingMonsters ?? [];
+
+  if (pendingMonsters.length > processedPendingCount) {
+    const batch = pendingMonsters.slice(processedPendingCount);
+    const newCharacters: Character[] = batch.map((monster, i) => ({
+      id: `pending-${processedPendingCount + i}`,
+      name: monster.name,
+      bonus: monster.dexModifier,
+      roll: "" as const,
+      maxHp: monster.hp,
+      monsterSlug: monster.slug,
+    }));
+
+    setCharacters((prev) =>
+      renumberMonsterCopies([...prev, ...newCharacters], monsterNameBySlug),
+    );
+    setProcessedPendingCount(pendingMonsters.length);
+
+    if (isReady && batch.length > 0) {
+      setQueuedSetupCount((current) => current + batch.length);
+    }
+  }
+
   return {
     nameInputRef,
     listRef,
@@ -277,6 +311,7 @@ export default function useInitiativeTracker(monsters: MonsterSummary[]) {
     newName,
     newBonus,
     monsterMenuAnchor,
+    queuedSetupCount: isReady ? queuedSetupCount : 0,
     setNewName,
     setNewBonus,
     addCharacter,

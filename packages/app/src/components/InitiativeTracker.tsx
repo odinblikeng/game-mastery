@@ -18,6 +18,7 @@ import ChevronLeftRoundedIcon from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRoundedIcon from "@mui/icons-material/ChevronRightRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import PetsRoundedIcon from "@mui/icons-material/PetsRounded";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import IconButton from "@mui/material/IconButton";
@@ -26,12 +27,14 @@ import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import { useMonsterOverlay } from "@/contexts/MonsterOverlayContext";
 import type { MonsterSummary } from "@/types/monster";
 import { toTestId, formatTime } from "@/lib/initiative";
 import useInitiativeTracker from "@/hooks/useInitiativeTracker";
 import SortableRow from "@/components/SortableRow";
 
 export default function InitiativeTracker({ monsters }: { monsters: MonsterSummary[] }) {
+  const { pendingMonsters } = useMonsterOverlay();
   const {
     nameInputRef,
     listRef,
@@ -44,6 +47,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
     newName,
     newBonus,
     monsterMenuAnchor,
+    queuedSetupCount,
     setNewName,
     setNewBonus,
     addCharacter,
@@ -62,7 +66,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
     nextTurn,
     openMonsterMenu,
     closeMonsterMenu,
-  } = useInitiativeTracker(monsters);
+  } = useInitiativeTracker(monsters, { pendingMonsters });
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -80,7 +84,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
           <Stack>
             <Typography variant="subtitle2" color="text.secondary">
               <span data-testid="cy-initiative-round-status">
-              Round {round} &middot; {formatTime(totalTurns)}
+                Round {round} &middot; {formatTime(totalTurns)}
               </span>
             </Typography>
           </Stack>
@@ -88,6 +92,12 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
             Reset
           </Button>
         </Stack>
+
+        {queuedSetupCount > 0 ? (
+          <Alert severity="info" data-testid="cy-initiative-queued-setup-alert">
+            {queuedSetupCount} monster{queuedSetupCount === 1 ? " was" : "s were"} added to setup. Reset the tracker to include {queuedSetupCount === 1 ? "it" : "them"} in the turn order.
+          </Alert>
+        ) : null}
 
         <DndContext
           sensors={sensors}
