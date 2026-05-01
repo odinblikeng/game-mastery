@@ -3,11 +3,22 @@
 import Button from "@mui/material/Button";
 import MonsterStatBlock from "@/components/MonsterStatBlock";
 import OverlayDialog from "@/components/OverlayDialog";
-import { useMonsterOverlay } from "@/contexts/MonsterOverlayContext";
+import { useGameStore } from "@/store/useGameStore";
 
 export default function MonsterStatBlockDialog() {
-  const { openSlug, monsterDataMap, closeStatBlock, addToInitiative } = useMonsterOverlay();
-  const monster = openSlug ? monsterDataMap[openSlug] : null;
+  const openMonsterSlug = useGameStore((s) => s.openMonsterSlug);
+  const monsterDataMap = useGameStore((s) => s.monsterDataMap);
+  const closeStatBlock = useGameStore((s) => s.closeStatBlock);
+  const addMonster = useGameStore((s) => s.addMonster);
+  const setToolsParam = useGameStore((s) => s.setToolsParam);
+  const monster = openMonsterSlug ? monsterDataMap[openMonsterSlug] : null;
+
+  const handleAddToInitiative = () => {
+    if (!openMonsterSlug) return;
+    addMonster(openMonsterSlug);
+    closeStatBlock();
+    setToolsParam("initiative");
+  };
 
   return (
     <OverlayDialog
@@ -17,7 +28,7 @@ export default function MonsterStatBlockDialog() {
       testId="cy-monster-stat-dialog"
       actions={
         monster ? (
-          <Button variant="contained" onClick={() => addToInitiative(openSlug!)} data-testid="cy-monster-add-initiative">
+          <Button variant="contained" onClick={handleAddToInitiative} data-testid="cy-monster-add-initiative">
             Add to Initiative
           </Button>
         ) : null

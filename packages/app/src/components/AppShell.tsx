@@ -3,16 +3,18 @@
 import Box from "@mui/material/Box";
 import type { ReactNode } from "react";
 import { useSyncExternalStore } from "react";
+import { useRouter } from "next/navigation";
 import type { AreaMeta } from "@/lib/areas";
 import MonsterStatBlockDialog from "@/components/MonsterStatBlockDialog";
-import { MonsterOverlayProvider } from "@/contexts/MonsterOverlayContext";
+import StoreHydrator from "@/components/StoreHydrator";
 import AreaSidebar from "@/components/AreaSidebar";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import SidebarPanel from "@/components/SidebarPanel";
 import ToolsSidebar from "@/components/ToolsSidebar";
-import useQueryParams from "@/hooks/useQueryParams";
 import useToolsSidebarWidth from "@/hooks/useToolsSidebarWidth";
+import { useGameStore } from "@/store/useGameStore";
+import { buildUrlFromState } from "@/store/urlSync";
 import type { MonsterDataMap, MonsterSummary } from "@/types/monster";
 
 type AppShellProps = {
@@ -23,21 +25,31 @@ type AppShellProps = {
 };
 
 export default function AppShell({ areas, monsters, monsterDataMap, children }: AppShellProps) {
-  const { get, remove } = useQueryParams();
   const isHydrated = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false,
   );
-  const selectedSlug = get("area") ?? undefined;
-  const showAreaSidebar =
-    get("sidebar") === "areas" || Boolean(selectedSlug);
-  const toolsParam = get("tools") ?? undefined;
+  const areaSidebarOpen = useGameStore((s) => s.areaSidebarOpen);
+  const selectedAreaSlug = useGameStore((s) => s.selectedAreaSlug) ?? undefined;
+  const toolsParam = useGameStore((s) => s.toolsParam) ?? undefined;
   const showToolsSidebar = Boolean(toolsParam);
-  const { effectiveWidth, maxWidth, minWidth, onWidthChange } = useToolsSidebarWidth(showAreaSidebar);
+  const closeAreaSidebar = useGameStore((s) => s.closeAreaSidebar);
+  const closeTools = useGameStore((s) => s.closeTools);
+  const router = useRouter();
+
+  // Closing the area sidebar may need to clear area content rendered by
+  // page.tsx (server component). router.push re-renders the server tree;
+  // closeAreaSidebar() updates store state.
+  const handleCloseAreaSidebar = () => {
+    closeAreaSidebar();
+    router.push(buildUrlFromState({ areaSidebarOpen: false, selectedAreaSlug: null, toolsParam: toolsParam ?? null }));
+  };
+  const { effectiveWidth, maxWidth, minWidth, onWidthChange } = useToolsSidebarWidth(areaSidebarOpen);
 
   return (
-    <MonsterOverlayProvider monsterDataMap={monsterDataMap}>
+    <>
+      <StoreHydrator monsters={monsters} monsterDataMap={monsterDataMap} />
       <div className="app-shell" data-testid="cy-app-shell" data-hydrated={isHydrated ? "true" : "false"}>
         <Header />
         <Box
@@ -58,13 +70,13 @@ export default function AppShell({ areas, monsters, monsterDataMap, children }: 
               alignItems: "flex-start",
             }}
           >
-            {showAreaSidebar ? (
+            {areaSidebarOpen ? (
               <SidebarPanel
                 width={340}
-                onClose={() => remove("sidebar", "area")}
+                onClose={handleCloseAreaSidebar}
                 closeButtonTestId="cy-area-sidebar-close"
               >
-                <AreaSidebar areas={areas} selectedSlug={selectedSlug} />
+                <AreaSidebar areas={areas} selectedSlug={selectedAreaSlug} />
               </SidebarPanel>
             ) : null}
             <Box component="main" className="app-main" sx={{ flex: 1, minWidth: 0 }}>
@@ -80,10 +92,10 @@ export default function AppShell({ areas, monsters, monsterDataMap, children }: 
                 panelTestId="cy-tools-sidebar-panel"
                 resizeHandleTestId="cy-tools-sidebar-resize-handle"
                 onWidthChange={onWidthChange}
-                onClose={() => remove("tools")}
+                onClose={closeTools}
                 closeButtonTestId="cy-tools-sidebar-close"
               >
-                <ToolsSidebar tool={toolsParam} monsters={monsters} />
+                <ToolsSidebar tool={toolsParam} />
               </SidebarPanel>
             ) : null}
           </Box>
@@ -91,6 +103,6 @@ export default function AppShell({ areas, monsters, monsterDataMap, children }: 
         <Footer />
       </div>
       <MonsterStatBlockDialog />
-    </MonsterOverlayProvider>
+    </>
   );
 }

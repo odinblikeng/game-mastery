@@ -10,36 +10,52 @@ import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/navigation";
 import { useColorScheme } from "@mui/material/styles";
-import useQueryParams from "@/hooks/useQueryParams";
+import { useGameStore } from "@/store/useGameStore";
+import { buildUrlFromState } from "@/store/urlSync";
 
 export default function Header() {
-  const { get, has, set, remove } = useQueryParams();
   const { mode, setMode } = useColorScheme();
-  const isAreaSidebarOpen = get("sidebar") === "areas" || has("area");
-  const isToolsSidebarOpen = has("tools");
+  const areaSidebarOpen = useGameStore((s) => s.areaSidebarOpen);
+  const toolsParam = useGameStore((s) => s.toolsParam);
+  const openAreaSidebar = useGameStore((s) => s.openAreaSidebar);
+  const closeAreaSidebar = useGameStore((s) => s.closeAreaSidebar);
+  const closeTools = useGameStore((s) => s.closeTools);
+  const setToolsParam = useGameStore((s) => s.setToolsParam);
+  const closeStatBlock = useGameStore((s) => s.closeStatBlock);
+  const router = useRouter();
 
-  const navigateHome = () => remove("sidebar", "area", "tools");
+  const navigateHome = () => {
+    closeAreaSidebar();
+    closeTools();
+    closeStatBlock();
+    router.push("/");
+  };
 
-  const toggleAreasSidebar = () => {
-    if (isAreaSidebarOpen) {
-      remove("sidebar", "area");
+  const handleToggleAreaSidebar = () => {
+    if (areaSidebarOpen) {
+      closeAreaSidebar();
+      router.push(buildUrlFromState({ areaSidebarOpen: false, selectedAreaSlug: null, toolsParam }));
     } else {
-      set({ sidebar: "areas" });
+      openAreaSidebar();
     }
   };
 
   const toggleToolsSidebar = () => {
-    if (isToolsSidebarOpen) {
-      remove("tools");
+    if (toolsParam !== null) {
+      closeTools();
     } else {
-      set({ tools: "menu" });
+      setToolsParam("menu");
     }
   };
 
   const toggleColorMode = () => {
-    setMode(mode === "dark" ? "light" : "dark");
+    const next = mode === "dark" ? "light" : "dark";
+    setMode(next);
   };
+
+  const isToolsSidebarOpen = toolsParam !== null;
 
   return (
     <AppBar
@@ -138,11 +154,11 @@ export default function Header() {
               Dashboard
             </Button>
             <Button
-              onClick={toggleAreasSidebar}
-              variant={isAreaSidebarOpen ? "contained" : "outlined"}
+              onClick={handleToggleAreaSidebar}
+              variant={areaSidebarOpen ? "contained" : "outlined"}
               data-testid="cy-header-area-button"
               sx={{
-                color: isAreaSidebarOpen ? undefined : "chrome.text",
+                color: areaSidebarOpen ? undefined : "chrome.text",
                 whiteSpace: "nowrap",
               }}
             >

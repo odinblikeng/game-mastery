@@ -12,13 +12,11 @@ import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import InitiativeTracker from "@/components/InitiativeTracker";
-import useQueryParams from "@/hooks/useQueryParams";
-import type { MonsterSummary } from "@/types/monster";
+import { useGameStore } from "@/store/useGameStore";
 import type { ToolDefinition } from "@/types/tools";
 
 type ToolsSidebarProps = {
     tool?: string;
-    monsters: MonsterSummary[];
 };
 
 const toolRegistry: ToolDefinition[] = [
@@ -31,11 +29,11 @@ const toolRegistry: ToolDefinition[] = [
     },
 ];
 
-export default function ToolsSidebar({ tool, monsters }: ToolsSidebarProps) {
-    const { set } = useQueryParams();
+export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
+    const setToolsParam = useGameStore((s) => s.setToolsParam);
     const activeTool = toolRegistry.find(({ slug }) => slug === tool);
     
-    const navigate = (toolValue: string) => set({ tools: toolValue });
+    const navigate = (toolValue: string) => setToolsParam(toolValue);
     const goBack = () => navigate("menu");
     
     if (activeTool) {
@@ -58,7 +56,7 @@ export default function ToolsSidebar({ tool, monsters }: ToolsSidebarProps) {
             <Typography variant="body2" sx={{ mb: 2.5, color: "sidebar.mutedText" }}>
             {activeTool.description}
             </Typography>
-            <ActiveTool monsters={monsters} />
+            <ActiveTool />
             </>
         );
     }

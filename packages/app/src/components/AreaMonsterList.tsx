@@ -3,20 +3,15 @@
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useOptionalMonsterOverlay } from "@/contexts/MonsterOverlayContext";
+import { useGameStore } from "@/store/useGameStore";
 
 type AreaMonsterListProps = {
   slugs: string[];
 };
 
 export default function AreaMonsterList({ slugs }: AreaMonsterListProps) {
-  const context = useOptionalMonsterOverlay();
-
-  if (!context) {
-    return null;
-  }
-
-  const { monsterDataMap, openStatBlock } = context;
+  const monsterDataMap = useGameStore((s) => s.monsterDataMap);
+  const openStatBlock = useGameStore((s) => s.openStatBlock);
   const areaMonsters = slugs.filter((slug) => Boolean(monsterDataMap[slug]));
 
   if (areaMonsters.length === 0) {

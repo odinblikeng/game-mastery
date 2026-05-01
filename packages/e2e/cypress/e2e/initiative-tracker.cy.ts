@@ -191,6 +191,19 @@ describe("Initiative tracker", () => {
     cy.get('[data-testid="cy-initiative-row-gandalf"]').should("not.exist");
   });
 
+  it("reset clears monster entries — they do not re-appear", () => {
+    addMonster("swarm-of-animated-books");
+
+    cy.get('[aria-label="Swarm of Animated Books roll"]').type("14");
+    cy.get('[data-testid="cy-initiative-ready-button"]').click();
+
+    cy.get('[data-testid="cy-initiative-reset-button"]').click();
+
+    cy.get('[data-testid="cy-initiative-name-input"]').should("be.visible");
+    cy.get('[data-testid="cy-initiative-setup-swarm-of-animated-books"]').should("not.exist");
+    cy.get('[data-testid="cy-initiative-row-swarm-of-animated-books"]').should("not.exist");
+  });
+
   it("adds a monster from the picker with bonus and HP", () => {
     addMonster("swarm-of-animated-books");
 

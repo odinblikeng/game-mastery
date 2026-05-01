@@ -154,7 +154,9 @@ export default function SidebarPanel({
           p: 2,
           boxShadow: (t) => t.palette.sidebar.shadow,
           maxHeight: { lg: "calc(100vh - 122px)" },
-          overflowY: { lg: "auto" },
+          overflow: { lg: "hidden" },
+          display: { lg: "flex" },
+          flexDirection: { lg: "column" },
         }}
       >
         <IconButton

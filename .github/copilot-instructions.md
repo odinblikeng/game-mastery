@@ -53,5 +53,13 @@
 ## Icons
 - MUI Icons (`@mui/icons-material`) does not include a skull icon. Use a custom `SvgIcon` wrapper with an inline SVG path when needed.
 
+## State Management
+- All shared runtime and UI state lives in a single Zustand store at `src/store/useGameStore.ts`. No React Context for shared state.
+- Three slices: **static data** (monsters/monsterDataMap, server-injected once), **initiative** (combat tracker), **UI** (sidebars, stat block dialog, tools param, color mode).
+- Always use named store actions — never call `set()` or `setState()` from components.
+- `StoreHydrator` (client component in `AppShell`) hydrates the store from server-loaded props and syncs URL→store via `useSearchParams`.
+- Area navigation (selecting an area, closing area sidebar) uses `router.push()` so that `page.tsx` (server component) re-renders with the correct `searchParams`. Tools sidebar state uses `window.history.pushState` (store action) — no server re-render needed.
+- See `.github/instructions/state-management.instructions.md` for full detail on slices, URL sync, and patterns.
+
 ## Project Notes
 - Respect the existing strict TypeScript and Next.js ESLint setup.

@@ -8,7 +8,6 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useState } from "react";
 import type { AreaMeta } from "@/lib/areas";
-import useQueryParams from "@/hooks/useQueryParams";
 import AreaListItem from "@/components/AreaListItem";
 
 type AreaSidebarProps = {
@@ -17,7 +16,6 @@ type AreaSidebarProps = {
 };
 
 export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
-  const { buildHref } = useQueryParams();
   const [search, setSearch] = useState("");
 
   const filtered = areas.filter((area) => {
@@ -29,22 +27,14 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
   });
 
   return (
-    <>
+    <Box sx={{ display: { lg: "flex" }, flexDirection: { lg: "column" }, flex: { lg: 1 }, minHeight: { lg: 0 } }}>
       <Box
         sx={{
-          position: "sticky",
-          top: 0,
-          zIndex: 1,
-          backgroundColor: "sidebar.background",
+          flexShrink: 0,
+          padding:{ xs: 1.5, md: 2.5 },
           pb: 0.5,
         }}
       >
-        <Stack spacing={0.5} sx={{ mb: 2, pr: 4 }}>
-          <Typography variant="h6">Area Compendium</Typography>
-          <Typography variant="body2" sx={{ color: "sidebar.mutedText" }}>
-            Search room codes, titles, and load encounter notes.
-          </Typography>
-        </Stack>
         <TextField
           placeholder="Search by code or title"
           size="small"
@@ -54,13 +44,7 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
           slotProps={{ htmlInput: { "data-testid": "cy-area-search-input" } }}
           sx={{ mb: 1.5 }}
         />
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          spacing={1}
-          sx={{ mb: 0.5 }}
-        >
+
           <Typography variant="overline" sx={{ color: "sidebar.mutedText", letterSpacing: "0.16em" }}>
             Ready Rooms
           </Typography>
@@ -71,8 +55,8 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
             data-testid="cy-area-count-chip"
             sx={{ color: "sidebar.text", borderColor: "sidebar.border" }}
           />
-        </Stack>
       </Box>
+      <Box sx={{ flex: { lg: 1 }, overflowY: { lg: "auto" }, minHeight: { lg: 0 } }}>
       {areas.length === 0 ? (
         <Typography color="text.secondary" variant="body2" sx={{ mt: 2 }}>
           No area files were found in src/content/areas.
@@ -88,11 +72,12 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
               key={area.slug}
               area={area}
               selected={selectedSlug === area.slug}
-              href={buildHref({ sidebar: "areas", area: area.slug })}
+              href={`/?sidebar=areas&area=${area.slug}`}
             />
           ))}
         </List>
       )}
-    </>
+        </Box>
+    </Box>
   );
 }

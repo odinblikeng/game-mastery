@@ -27,46 +27,95 @@ import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { useMonsterOverlay } from "@/contexts/MonsterOverlayContext";
-import type { MonsterSummary } from "@/types/monster";
+import { useRef, useState } from "react";
+import type { DragEndEvent } from "@dnd-kit/core";
+import { useGameStore } from "@/store/useGameStore";
 import { toTestId, formatTime } from "@/lib/initiative";
-import useInitiativeTracker from "@/hooks/useInitiativeTracker";
 import SortableRow from "@/components/SortableRow";
 
-export default function InitiativeTracker({ monsters }: { monsters: MonsterSummary[] }) {
-  const { pendingMonsters } = useMonsterOverlay();
-  const {
-    nameInputRef,
-    listRef,
-    characters,
-    resolved,
-    isReady,
-    activeIndex,
-    round,
-    totalTurns,
-    newName,
-    newBonus,
-    monsterMenuAnchor,
-    queuedSetupCount,
-    setNewName,
-    setNewBonus,
-    addCharacter,
-    addMonsterCharacter,
-    handleMonsterMenuExited,
-    updateCharacter,
-    deleteCharacter,
-    handleReady,
-    handleReset,
-    toggleDying,
-    setHp,
-    updateSaves,
-    handleDragEnd,
-    handleColumnTab,
-    previousTurn,
-    nextTurn,
-    openMonsterMenu,
-    closeMonsterMenu,
-  } = useInitiativeTracker(monsters, { pendingMonsters });
+export default function InitiativeTracker() {
+  // Store state
+  const characters = useGameStore((s) => s.characters);
+  const resolved = useGameStore((s) => s.resolved);
+  const isReady = useGameStore((s) => s.isReady);
+  const activeIndex = useGameStore((s) => s.activeIndex);
+  const round = useGameStore((s) => s.round);
+  const totalTurns = useGameStore((s) => s.totalTurns);
+  const queuedSetupCount = useGameStore((s) => s.queuedSetupCount);
+  const monsters = useGameStore((s) => s.monsters);
+
+  // Store actions
+  const addCharacter = useGameStore((s) => s.addCharacter);
+  const addMonster = useGameStore((s) => s.addMonster);
+  const updateCharacter = useGameStore((s) => s.updateCharacter);
+  const deleteCharacter = useGameStore((s) => s.deleteCharacter);
+  const ready = useGameStore((s) => s.ready);
+  const reset = useGameStore((s) => s.reset);
+  const nextTurn = useGameStore((s) => s.nextTurn);
+  const previousTurn = useGameStore((s) => s.previousTurn);
+  const toggleDying = useGameStore((s) => s.toggleDying);
+  const setHp = useGameStore((s) => s.setHp);
+  const updateSaves = useGameStore((s) => s.updateSaves);
+  const reorder = useGameStore((s) => s.reorder);
+  const clearQueuedSetupCount = useGameStore((s) => s.clearQueuedSetupCount);
+
+  // Local UI state (DOM concerns, not shared)
+  const [newName, setNewName] = useState("");
+  const [newBonus, setNewBonus] = useState("");
+  const [monsterMenuAnchor, setMonsterMenuAnchor] = useState<HTMLElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const shouldRefocusNameInputRef = useRef(false);
+
+  const handleAddCharacter = () => {
+    addCharacter(newName, newBonus === "" ? 0 : Number(newBonus));
+    setNewName("");
+    setNewBonus("");
+    nameInputRef.current?.focus();
+  };
+
+  const handleAddMonster = (slug: string) => {
+    addMonster(slug);
+    shouldRefocusNameInputRef.current = true;
+    setMonsterMenuAnchor(null);
+  };
+
+  const handleMonsterMenuExited = () => {
+    if (!shouldRefocusNameInputRef.current) return;
+    shouldRefocusNameInputRef.current = false;
+    nameInputRef.current?.focus();
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      reorder(String(active.id), String(over.id));
+    }
+  };
+
+  const handleColumnTab = (e: React.KeyboardEvent, col: string, index: number) => {
+    if (e.key !== "Tab" || e.shiftKey) return;
+    const container = listRef.current;
+    if (!container) return;
+    const nextInCol = container.querySelector<HTMLInputElement>(
+      `[data-col="${col}"][data-row="${index + 1}"]`,
+    );
+    if (nextInCol) {
+      e.preventDefault();
+      nextInCol.focus();
+      return;
+    }
+    const nextCol = col === "bonus" ? "roll" : null;
+    if (nextCol) {
+      const first = container.querySelector<HTMLInputElement>(
+        `[data-col="${nextCol}"][data-row="0"]`,
+      );
+      if (first) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -88,13 +137,13 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
               </span>
             </Typography>
           </Stack>
-          <Button size="small" onClick={handleReset} data-testid="cy-initiative-reset-button">
+          <Button size="small" onClick={reset} data-testid="cy-initiative-reset-button">
             Reset
           </Button>
         </Stack>
 
         {queuedSetupCount > 0 ? (
-          <Alert severity="info" data-testid="cy-initiative-queued-setup-alert">
+          <Alert severity="info" data-testid="cy-initiative-queued-setup-alert" onClose={clearQueuedSetupCount}>
             {queuedSetupCount} monster{queuedSetupCount === 1 ? " was" : "s were"} added to setup. Reset the tracker to include {queuedSetupCount === 1 ? "it" : "them"} in the turn order.
           </Alert>
         ) : null}
@@ -176,7 +225,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") addCharacter();
+            if (e.key === "Enter") handleAddCharacter();
           }}
           slotProps={{ htmlInput: { "data-testid": "cy-initiative-name-input" } }}
           sx={{ flex: 1 }}
@@ -188,13 +237,13 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
           value={newBonus}
           onChange={(e) => setNewBonus(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") addCharacter();
+            if (e.key === "Enter") handleAddCharacter();
           }}
           slotProps={{ htmlInput: { "data-testid": "cy-initiative-bonus-input" } }}
           sx={{ width: 72 }}
         />
         <IconButton
-          onClick={addCharacter}
+          onClick={handleAddCharacter}
           color="primary"
           aria-label="Add character"
           data-testid="cy-initiative-add-character"
@@ -203,7 +252,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
         </IconButton>
         {monsters.length > 0 ? (
           <IconButton
-            onClick={openMonsterMenu}
+            onClick={(e) => setMonsterMenuAnchor(e.currentTarget)}
             color="secondary"
             aria-label="Add monster"
             data-testid="cy-initiative-add-monster"
@@ -215,7 +264,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
       <Menu
         anchorEl={monsterMenuAnchor}
         open={Boolean(monsterMenuAnchor)}
-        onClose={closeMonsterMenu}
+        onClose={() => setMonsterMenuAnchor(null)}
         disableRestoreFocus
         slotProps={{
           transition: {
@@ -226,7 +275,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
         {monsters.map((monster) => (
           <MenuItem
             key={monster.slug}
-            onClick={() => addMonsterCharacter(monster)}
+            onClick={() => handleAddMonster(monster.slug)}
             data-testid={`cy-initiative-monster-option-${toTestId(monster.name)}`}
           >
             <Stack spacing={0.25}>
@@ -311,7 +360,7 @@ export default function InitiativeTracker({ monsters }: { monsters: MonsterSumma
 
       {/* Ready button */}
       {characters.length > 0 && (
-        <Button variant="contained" onClick={handleReady} fullWidth data-testid="cy-initiative-ready-button">
+        <Button variant="contained" onClick={ready} fullWidth data-testid="cy-initiative-ready-button">
           Ready
         </Button>
       )}

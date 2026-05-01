@@ -2,7 +2,7 @@
 
 import Link from "@mui/material/Link";
 import type { ReactNode } from "react";
-import { useOptionalMonsterOverlay } from "@/contexts/MonsterOverlayContext";
+import { useGameStore } from "@/store/useGameStore";
 
 type MonsterReferenceProps = {
   slug: string;
@@ -10,13 +10,13 @@ type MonsterReferenceProps = {
 };
 
 export default function MonsterReference({ slug, children }: MonsterReferenceProps) {
-  const context = useOptionalMonsterOverlay();
+  const monsterDataMap = useGameStore((s) => s.monsterDataMap);
+  const openStatBlock = useGameStore((s) => s.openStatBlock);
+  const monster = monsterDataMap[slug];
 
-  if (!context || !context.monsterDataMap[slug]) {
+  if (!monster) {
     return <>{children}</>;
   }
-
-  const { monsterDataMap, openStatBlock } = context;
 
   return (
     <Link
@@ -32,7 +32,7 @@ export default function MonsterReference({ slug, children }: MonsterReferencePro
         textAlign: "inherit",
       }}
     >
-      {children ?? monsterDataMap[slug].name}
+      {children ?? monster.name}
     </Link>
   );
 }
