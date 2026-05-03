@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
-import Container from "@mui/material/Container";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import AreaMonsterList from "@/components/AreaMonsterList";
+import HeroActionCards from "@/components/HeroActionCards";
 import { getArea, getAreaList } from "@/lib/areas";
 
 type HomeProps = {
@@ -16,10 +16,9 @@ type HomeProps = {
 };
 
 export default async function Home({ searchParams }: HomeProps) {
-  const { sidebar, area } = await searchParams;
+  const { area } = await searchParams;
   const areas = await getAreaList();
   const selectedArea = area ? await getArea(area) : null;
-  const showAreaSidebar = sidebar === "areas" || Boolean(selectedArea);
   const SelectedAreaContent = selectedArea?.Content;
   const areaCountLabel =
     areas.length === 0
@@ -27,23 +26,16 @@ export default async function Home({ searchParams }: HomeProps) {
       : `${areas.length} area${areas.length === 1 ? "" : "s"} ready`;
 
   return (
-    <Container
-      maxWidth={false}
-      sx={{
-        width: "100%",
-        maxWidth: 1140,
-        mx: "auto",
-        py: { xs: 3, md: 4 },
-      }}
-    >
+    <Box sx={{ p: { xs: 2, md: 4 }, minHeight: "100%" }}>
       {selectedArea && SelectedAreaContent ? (
         <Paper
           elevation={0}
           sx={{
-            border: 1,
+            border: "1px solid",
             borderColor: "divider",
             p: { xs: 3, md: 4 },
             minHeight: 420,
+            boxShadow: "var(--mui-palette-chrome-shadow)",
           }}
         >
           <Stack spacing={3}>
@@ -53,7 +45,7 @@ export default async function Home({ searchParams }: HomeProps) {
               <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 760 }}>
                 {selectedArea.description}
               </Typography>
-                {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
+              {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
             </Stack>
             <Divider />
             <Box sx={{ "& > :last-child": { mb: 0 } }}>
@@ -67,7 +59,7 @@ export default async function Home({ searchParams }: HomeProps) {
           sx={{
             position: "relative",
             overflow: "hidden",
-            border: 1,
+            border: "1px solid",
             borderColor: "hero.border",
             px: { xs: 3, md: 5 },
             py: { xs: 4, md: 6 },
@@ -83,24 +75,30 @@ export default async function Home({ searchParams }: HomeProps) {
             },
           }}
         >
-          <Stack spacing={3} sx={{ position: "relative", maxWidth: 680 }}>
+          <Stack spacing={3} sx={{ position: "relative" }}>
             <Chip
               label={areaCountLabel}
               color="primary"
               variant="outlined"
-              sx={{ alignSelf: "flex-start", color: "hero.text" }}
+              sx={{ alignSelf: "flex-start" }}
             />
-            <Typography variant="h1" sx={{ color: "hero.text", fontSize: { xs: "2.4rem", md: "4rem" } }}>
+            <Typography
+              variant="h1"
+              sx={{
+                color: "hero.text",
+                fontSize: { xs: "2.4rem", md: "3.5rem" },
+                fontFamily: "var(--font-display), serif",
+              }}
+            >
               Game Mastery
             </Typography>
-            <Typography variant="body1" sx={{ color: "hero.mutedText" }}>
-              {showAreaSidebar
-                ? "The area compendium is open — select an entry from the sidebar to load its notes here."
-                : "Open the area compendium or session tools from the header to get started."}
+            <Typography variant="body1" sx={{ color: "hero.mutedText", maxWidth: 480 }}>
+              Open the area compendium or session tools from the rail to get started.
             </Typography>
+            <HeroActionCards />
           </Stack>
         </Paper>
       )}
-    </Container>
+    </Box>
   );
 }

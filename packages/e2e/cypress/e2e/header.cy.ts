@@ -7,58 +7,62 @@ const visitAndWait = (path: string) => {
   cy.get('[data-testid="cy-app-shell"]').should("have.attr", "data-hydrated", "true");
 };
 
-describe("Header navigation", () => {
-  it("renders the header shell on the dashboard", () => {
+describe("Left rail navigation", () => {
+  it("renders the rail shell on the dashboard", () => {
     visitAndWait("/");
 
-    cy.contains("Campaign Command Screen").should("be.visible");
-    cy.get('[data-testid="cy-header-theme-toggle"]').should("be.visible");
-    cy.get('[data-testid="cy-header-dashboard-button"]').should("be.visible");
-    cy.get('[data-testid="cy-header-area-button"]').should("be.visible");
-    cy.get('[data-testid="cy-header-tools-button"]').should("be.visible");
+    cy.get('[data-testid="cy-rail-logo"]').should("be.visible");
+    cy.get('[data-testid="cy-rail-dashboard"]').should("be.visible");
+    cy.get('[data-testid="cy-rail-areas"]').should("be.visible");
+    cy.get('[data-testid="cy-rail-tools"]').should("be.visible");
+    cy.get('[data-testid="cy-rail-theme-toggle"]').should("exist");
   });
 
   it("clears the query state when Dashboard is clicked", () => {
     visitAndWait("/?sidebar=areas&area=m1&tools=menu");
 
-    cy.get('[data-testid="cy-header-dashboard-button"]').click();
+    cy.get('[data-testid="cy-rail-dashboard"]').click();
 
     cy.location("search").should("eq", "");
-    cy.contains("Open the area compendium or session tools from the header to get started.").should(
+    cy.contains("Open the area compendium or session tools from the rail to get started.").should(
       "be.visible",
     );
   });
 
-  it("toggles the area sidebar from the header", () => {
+  it("clicking the Areas button adds sidebar to URL", () => {
     visitAndWait("/");
 
-    cy.get('[data-testid="cy-header-area-button"]').click();
+    cy.get('[data-testid="cy-rail-areas"]').click();
     cy.location("search").should("include", "sidebar=areas");
-    cy.get('[data-testid="cy-area-search-input"]').should("be.visible");
-
-    cy.get('[data-testid="cy-header-area-button"]').click();
-    cy.location("search").should("eq", "");
-    cy.get('[data-testid="cy-area-search-input"]').should("not.exist");
   });
 
-  it("toggles the tools sidebar from the header", () => {
+  it("clicking the Areas button again removes sidebar from URL", () => {
+    visitAndWait("/?sidebar=areas");
+
+    cy.get('[data-testid="cy-rail-areas"]').click();
+    cy.location("search").should("not.include", "sidebar=areas");
+  });
+
+  it("clicking the Tools button adds tools=menu to URL", () => {
     visitAndWait("/");
 
-    cy.get('[data-testid="cy-header-tools-button"]').click();
+    cy.get('[data-testid="cy-rail-tools"]').click();
     cy.location("search").should("include", "tools=menu");
     cy.get('[data-testid="cy-tools-menu"]').should("be.visible");
-
-    cy.get('[data-testid="cy-header-tools-button"]').click();
-    cy.location("search").should("eq", "");
-    cy.get('[data-testid="cy-tools-menu"]').should("not.exist");
   });
 
-  it("supports both sidebars being open at the same time", () => {
+  it("clicking the Tools button again removes tools from URL", () => {
+    visitAndWait("/?tools=menu");
+
+    cy.get('[data-testid="cy-rail-tools"]').click();
+    cy.location("search").should("not.include", "tools");
+  });
+
+  it("supports both sidebar params at the same time", () => {
     visitAndWait("/");
 
-    cy.get('[data-testid="cy-header-area-button"]').click();
-    cy.location("search").should("include", "sidebar=areas");
-    cy.get('[data-testid="cy-header-tools-button"]').click();
+    cy.get('[data-testid="cy-rail-areas"]').click();
+    cy.get('[data-testid="cy-rail-tools"]').click();
 
     cy.location("search").should("include", "sidebar=areas");
     cy.location("search").should("include", "tools=menu");

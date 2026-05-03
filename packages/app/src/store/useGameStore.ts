@@ -293,7 +293,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   // UI state
   // -------------------------------------------------------------------------
   openMonsterSlug: null,
-  areaSidebarOpen: false,
+  areaSidebarOpen: true,
   selectedAreaSlug: null,
   toolsParam: null,
   colorMode: "system",
@@ -315,7 +315,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
 
   closeAreaSidebar() {
-    set({ areaSidebarOpen: false, selectedAreaSlug: null });
+    set({ areaSidebarOpen: false });
   },
 
   selectArea(slug) {

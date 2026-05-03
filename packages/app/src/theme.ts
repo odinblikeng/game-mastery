@@ -1,15 +1,29 @@
 import { alpha, createTheme } from "@mui/material/styles";
 
-export const ember = "#a43d24";
-export const gold = "#b68b46";
-export const parchment = "#f3ead8";
-export const ink = "#2c1b11";
+// Light mode tokens
+const parchmentTone = "#F4F1EA";
+const surfaceWhite = "#FFFFFF";
+const primaryText = "#2B2B2B";
+const secondaryText = "#6B6B6B";
+const indigoAccent = "#5C6BC0";
+const goldAccent = "#C2A96A";
+const subtleBorder = "#D8D2C4";
+
+// Dark mode tokens
+const darkBgMain = "#0d1016";
+const darkBgSurface = "#151922";
+const darkTextPrimary = "#ece8df";
+const darkTextSecondary = "#aaa49a";
+const darkTextMuted = "#7d776d";
+const darkAccentPrimary = "#8f8cff";
+const darkAccentGold = "#c4a76a";
+const darkBorderSubtle = "rgba(196, 167, 106, 0.18)";
+const darkBorderStrong = "rgba(196, 167, 106, 0.32)";
 
 const headingStyles = {
   fontFamily: "var(--font-display), serif",
-  fontWeight: 700,
-  letterSpacing: "0.06em",
-  textTransform: "uppercase" as const,
+  fontWeight: 600,
+  letterSpacing: "0.04em",
 };
 
 const theme = createTheme({
@@ -21,26 +35,26 @@ const theme = createTheme({
       palette: {
         mode: "light",
         primary: {
-          main: ember,
-          dark: "#7a2817",
-          light: "#ca6548",
-          contrastText: "#fff6eb",
+          main: indigoAccent,
+          dark: "#3949AB",
+          light: "#7986CB",
+          contrastText: "#ffffff",
         },
         secondary: {
-          main: gold,
-          dark: "#86632c",
-          light: "#d1af6f",
-          contrastText: "#26180d",
+          main: goldAccent,
+          dark: "#8D7540",
+          light: "#D4BC8A",
+          contrastText: "#2B2B2B",
         },
         background: {
-          default: "#faf6f0",
-          paper: parchment,
+          default: parchmentTone,
+          paper: surfaceWhite,
         },
         text: {
-          primary: ink,
-          secondary: "#6f5a47",
+          primary: primaryText,
+          secondary: secondaryText,
         },
-        divider: "#d8c3a6",
+        divider: subtleBorder,
         success: {
           main: "#4a744a",
         },
@@ -48,39 +62,39 @@ const theme = createTheme({
           main: "#bd7a1a",
         },
         chrome: {
-          text: ink,
-          mutedText: "#6f5a47",
-          dimText: alpha(ink, 0.48),
-          border: alpha(gold, 0.35),
-          borderStrong: alpha(gold, 0.55),
-          borderGlow: `linear-gradient(90deg, transparent 0%, ${alpha(gold, 0.25)} 18%, ${alpha(gold, 0.45)} 50%, ${alpha(gold, 0.25)} 82%, transparent 100%)`,
-          shadow: `0 8px 24px ${alpha("#000000", 0.08)}`,
-          headerBg: `linear-gradient(180deg, ${alpha("#ffffff", 0.92)}, ${alpha(parchment, 0.88)})`,
-          footerBg: `linear-gradient(180deg, ${alpha(parchment, 0.4)}, ${alpha(parchment, 0.7)})`,
-          logoBg: `linear-gradient(180deg, ${alpha(ember, 0.14)}, ${alpha(ink, 0.08)})`,
-          logoBorder: alpha(gold, 0.45),
-          logoText: ember,
+          text: primaryText,
+          mutedText: secondaryText,
+          dimText: alpha(primaryText, 0.48),
+          border: subtleBorder,
+          borderStrong: "#BFB9AF",
+          borderGlow: "none",
+          shadow: "0 4px 12px rgba(0,0,0,0.06)",
+          railBg: "transparent",
+          railBorder: subtleBorder,
+          railActiveMark: indigoAccent,
+          railActiveIcon: indigoAccent,
+          railActiveGlow: "none",
         },
         sidebar: {
-          background: alpha(parchment, 0.92),
-          border: alpha(gold, 0.3),
-          shadow: `0 20px 44px ${alpha("#000000", 0.1)}`,
-          mutedText: "#6f5a47",
-          text: ink,
-          itemBg: alpha("#ffffff", 0.4),
-          itemBgActive: alpha(ember, 0.1),
-          itemBgActiveHover: alpha(ember, 0.16),
-          itemBorder: alpha(gold, 0.18),
-          itemBorderActive: alpha(gold, 0.45),
-          itemBorderHover: alpha(gold, 0.35),
+          background: surfaceWhite,
+          border: subtleBorder,
+          shadow: "0 4px 12px rgba(0,0,0,0.06)",
+          mutedText: secondaryText,
+          text: primaryText,
+          itemBg: "transparent",
+          itemBgActive: alpha(indigoAccent, 0.06),
+          itemBgActiveHover: alpha(indigoAccent, 0.10),
+          itemBorder: "transparent",
+          itemBorderActive: indigoAccent,
+          itemBorderHover: subtleBorder,
         },
         hero: {
-          background: `linear-gradient(135deg, ${alpha(parchment, 0.95)}, ${alpha("#ffffff", 0.9)})`,
-          overlay: `radial-gradient(circle at top right, ${alpha(gold, 0.1)}, transparent 32%), radial-gradient(circle at left, ${alpha(ember, 0.08)}, transparent 34%)`,
-          border: alpha(gold, 0.35),
-          shadow: `0 12px 32px ${alpha("#000000", 0.06)}`,
-          text: ink,
-          mutedText: "#6f5a47",
+          background: parchmentTone,
+          overlay: "none",
+          border: subtleBorder,
+          shadow: "0 4px 12px rgba(0,0,0,0.06)",
+          text: primaryText,
+          mutedText: secondaryText,
         },
       },
     },
@@ -88,89 +102,89 @@ const theme = createTheme({
       palette: {
         mode: "dark",
         primary: {
-          main: "#d56e46",
-          dark: "#8d4227",
-          light: "#e59a76",
-          contrastText: "#140d09",
+          main: darkAccentPrimary,
+          dark: "#5C5ACC",
+          light: "#B0AEFF",
+          contrastText: "#0d1016",
         },
         secondary: {
-          main: "#c59b5c",
-          dark: "#8e6d3a",
-          light: "#e3be83",
-          contrastText: "#1a120b",
+          main: darkAccentGold,
+          dark: "#8A6F3A",
+          light: "#DBC083",
+          contrastText: "#0d1016",
         },
         background: {
-          default: "#0d0907",
-          paper: "#1b1511",
+          default: darkBgMain,
+          paper: darkBgSurface,
         },
         text: {
-          primary: "#f3e9db",
-          secondary: "#c6b7a2",
+          primary: darkTextPrimary,
+          secondary: darkTextSecondary,
         },
-        divider: "#5a4738",
+        divider: darkBorderSubtle,
         success: {
-          main: "#7cc17f",
+          main: "#78a886",
         },
         warning: {
           main: "#e0a343",
         },
         chrome: {
-          text: "#ffffff",
-          mutedText: alpha(parchment, 0.72),
-          dimText: alpha(parchment, 0.48),
-          border: alpha(gold, 0.35),
-          borderStrong: alpha(gold, 0.55),
-          borderGlow: `linear-gradient(90deg, transparent 0%, ${alpha(gold, 0.45)} 18%, ${alpha(gold, 0.8)} 50%, ${alpha(gold, 0.45)} 82%, transparent 100%)`,
-          shadow: `0 18px 40px ${alpha("#000000", 0.28)}`,
-          headerBg: "linear-gradient(180deg, rgba(16, 11, 8, 0.98), rgba(30, 20, 14, 0.94))",
-          footerBg: "linear-gradient(180deg, rgba(18, 12, 9, 0.2), rgba(9, 7, 6, 0.7))",
-          logoBg: "linear-gradient(180deg, rgba(174, 59, 33, 0.28), rgba(34, 22, 16, 0.92))",
-          logoBorder: alpha(gold, 0.55),
-          logoText: "#d1af6f",
+          text: darkTextPrimary,
+          mutedText: darkTextSecondary,
+          dimText: alpha(darkTextPrimary, 0.48),
+          border: darkBorderSubtle,
+          borderStrong: darkBorderStrong,
+          borderGlow: `linear-gradient(90deg, transparent, ${alpha(darkAccentGold, 0.35)} 50%, transparent)`,
+          shadow: "0 18px 40px rgba(0,0,0,0.45)",
+          railBg: "transparent",
+          railBorder: darkBorderSubtle,
+          railActiveMark: darkAccentPrimary,
+          railActiveIcon: darkAccentPrimary,
+          railActiveGlow: "0 0 16px rgba(143,140,255,0.6)",
         },
         sidebar: {
-          background: "rgba(24, 17, 13, 0.84)",
-          border: alpha(gold, 0.34),
-          shadow: `0 20px 44px ${alpha("#000000", 0.25)}`,
-          mutedText: alpha(parchment, 0.72),
-          text: "#ffffff",
-          itemBg: alpha("#ffffff", 0.02),
-          itemBgActive: alpha(ember, 0.16),
-          itemBgActiveHover: alpha(ember, 0.24),
-          itemBorder: alpha(gold, 0.18),
-          itemBorderActive: alpha(gold, 0.52),
-          itemBorderHover: alpha(gold, 0.4),
+          background: `linear-gradient(180deg, rgba(27,32,43,0.96), rgba(16,19,27,0.96))`,
+          border: darkBorderSubtle,
+          shadow: "0 18px 40px rgba(0,0,0,0.45)",
+          mutedText: darkTextMuted,
+          text: darkTextPrimary,
+          itemBg: "transparent",
+          itemBgActive: "rgba(143,140,255,0.09)",
+          itemBgActiveHover: "rgba(143,140,255,0.13)",
+          itemBorder: "transparent",
+          itemBorderActive: darkAccentPrimary,
+          itemBorderHover: darkBorderSubtle,
         },
         hero: {
-          background: "linear-gradient(135deg, rgba(22, 15, 11, 0.98), rgba(45, 31, 22, 0.95))",
-          overlay: `radial-gradient(circle at top right, ${alpha(gold, 0.18)}, transparent 32%), radial-gradient(circle at left, rgba(164, 61, 36, 0.22), transparent 34%)`,
-          border: alpha(gold, 0.4),
-          shadow: `0 26px 60px ${alpha("#000000", 0.28)}`,
-          text: "#ffffff",
-          mutedText: alpha(parchment, 0.78),
+          background: `linear-gradient(180deg, ${darkBgSurface}, ${darkBgMain})`,
+          overlay: `radial-gradient(circle at 30% 0%, rgba(143,140,255,0.12), transparent 32%), radial-gradient(circle at 80% 20%, rgba(196,167,106,0.08), transparent 28%)`,
+          border: darkBorderSubtle,
+          shadow: "0 18px 40px rgba(0,0,0,0.45)",
+          text: darkTextPrimary,
+          mutedText: darkTextSecondary,
         },
       },
     },
   },
   shape: {
-    borderRadius: 20,
+    borderRadius: 12,
   },
   typography: {
     fontFamily: "var(--font-body), sans-serif",
     h1: {
       ...headingStyles,
       fontSize: "3.5rem",
-      lineHeight: 1.02,
+      lineHeight: 1.06,
     },
     h2: {
       ...headingStyles,
       fontSize: "2.5rem",
-      lineHeight: 1.08,
+      lineHeight: 1.1,
     },
     h3: {
       ...headingStyles,
       fontSize: "1.7rem",
-      lineHeight: 1.15,
+      lineHeight: 1.18,
     },
     h6: {
       ...headingStyles,
@@ -178,82 +192,80 @@ const theme = createTheme({
       lineHeight: 1.2,
     },
     body1: {
-      fontSize: "1.05rem",
-      lineHeight: 1.75,
+      fontSize: "1rem",
+      lineHeight: 1.7,
     },
     body2: {
-      lineHeight: 1.65,
+      fontSize: "0.875rem",
+      lineHeight: 1.6,
     },
     button: {
-      fontWeight: 700,
-      letterSpacing: "0.08em",
-      textTransform: "uppercase",
+      fontWeight: 600,
+      letterSpacing: "0.04em",
+      textTransform: "none" as const,
     },
   },
   components: {
     MuiAppBar: {
       styleOverrides: {
-        root: ({ theme: currentTheme }) => ({
-          backgroundImage: currentTheme.palette.chrome.headerBg,
+        root: ({ theme: t }) => ({
+          backgroundColor: t.palette.background.paper,
+          backgroundImage: "none",
+          borderBottom: `1px solid ${t.palette.divider}`,
+          boxShadow: t.palette.chrome.shadow,
         }),
       },
     },
     MuiPaper: {
       styleOverrides: {
-        root: ({ theme: currentTheme }) => ({
-          backgroundImage:
-            currentTheme.palette.mode === "light"
-              ? `linear-gradient(180deg, ${alpha("#ffffff", 0.28)}, rgba(255,255,255,0)), radial-gradient(circle at top, ${alpha(gold, 0.14)}, transparent 42%)`
-              : `linear-gradient(180deg, ${alpha("#ffffff", 0.04)}, rgba(255,255,255,0)), radial-gradient(circle at top, ${alpha(gold, 0.08)}, transparent 40%)`,
-        }),
+        root: {
+          backgroundImage: "none",
+        },
       },
     },
     MuiButton: {
       styleOverrides: {
-        root: ({ theme: currentTheme }) => ({
+        root: {
           borderRadius: 999,
           boxShadow: "none",
-          paddingInline: currentTheme.spacing(2.5),
-          paddingBlock: currentTheme.spacing(1.15),
-        }),
-        containedPrimary: {
-          backgroundImage:
-            "linear-gradient(180deg, #b85231 0%, #8d311c 100%)",
-          border: `1px solid ${alpha(gold, 0.5)}`,
-          boxShadow: `0 14px 28px ${alpha("#000000", 0.22)}`,
+          paddingInline: "20px",
+          paddingBlock: "9px",
           "&:hover": {
-            backgroundImage:
-              "linear-gradient(180deg, #c76342 0%, #9b3922 100%)",
-            boxShadow: `0 18px 32px ${alpha("#000000", 0.28)}`,
+            boxShadow: "none",
           },
         },
-        outlined: ({ theme: currentTheme }) => ({
-          borderWidth: 1.5,
-          borderColor: alpha(currentTheme.palette.secondary.main, 0.5),
-          color:
-            currentTheme.palette.mode === "light"
-              ? currentTheme.palette.text.primary
-              : currentTheme.palette.text.primary,
+        containedPrimary: ({ theme: t }) => ({
+          backgroundColor: t.palette.primary.main,
           "&:hover": {
-            borderWidth: 1.5,
-            borderColor: currentTheme.palette.secondary.main,
-            backgroundColor: alpha(currentTheme.palette.secondary.main, 0.08),
+            backgroundColor: t.palette.primary.dark,
+            ...(t.palette.mode === "dark" && {
+              boxShadow: "0 0 24px rgba(143,140,255,0.25)",
+            }),
           },
         }),
-        outlinedSuccess: ({ theme: currentTheme }) => ({
-          borderColor: alpha(currentTheme.palette.success.main, 0.6),
-          color: currentTheme.palette.success.main,
+        outlined: ({ theme: t }) => ({
+          borderWidth: 1,
+          borderColor: t.palette.divider,
+          color: t.palette.text.primary,
           "&:hover": {
-            borderColor: currentTheme.palette.success.main,
-            backgroundColor: alpha(currentTheme.palette.success.main, 0.1),
+            borderColor: t.palette.primary.main,
+            backgroundColor: alpha(t.palette.primary.main, 0.06),
           },
         }),
-        outlinedError: ({ theme: currentTheme }) => ({
-          borderColor: alpha(currentTheme.palette.error.main, 0.6),
-          color: currentTheme.palette.error.main,
+        outlinedSuccess: ({ theme: t }) => ({
+          borderColor: alpha(t.palette.success.main, 0.6),
+          color: t.palette.success.main,
           "&:hover": {
-            borderColor: currentTheme.palette.error.main,
-            backgroundColor: alpha(currentTheme.palette.error.main, 0.1),
+            borderColor: t.palette.success.main,
+            backgroundColor: alpha(t.palette.success.main, 0.1),
+          },
+        }),
+        outlinedError: ({ theme: t }) => ({
+          borderColor: alpha(t.palette.error.main, 0.6),
+          color: t.palette.error.main,
+          "&:hover": {
+            borderColor: t.palette.error.main,
+            backgroundColor: alpha(t.palette.error.main, 0.1),
           },
         }),
       },
@@ -262,28 +274,27 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 999,
-          fontWeight: 700,
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
+          fontWeight: 600,
+          letterSpacing: "0.04em",
         },
       },
     },
     MuiOutlinedInput: {
       styleOverrides: {
-        root: ({ theme: currentTheme }) => ({
-          borderRadius: 14,
+        root: ({ theme: t }) => ({
+          borderRadius: 10,
           backgroundColor:
-            currentTheme.palette.mode === "light"
-              ? alpha("#ffffff", 0.52)
-              : alpha("#221914", 0.92),
+            t.palette.mode === "dark"
+              ? "rgba(255,255,255,0.045)"
+              : "transparent",
           "& fieldset": {
-            borderColor: alpha(currentTheme.palette.secondary.main, 0.4),
+            borderColor: t.palette.divider,
           },
           "&:hover fieldset": {
-            borderColor: alpha(currentTheme.palette.primary.main, 0.6),
+            borderColor: t.palette.primary.main,
           },
           "&.Mui-focused fieldset": {
-            borderColor: currentTheme.palette.primary.main,
+            borderColor: t.palette.primary.main,
             borderWidth: 1.5,
           },
         }),
@@ -291,11 +302,18 @@ const theme = createTheme({
     },
     MuiListItemButton: {
       styleOverrides: {
-        root: ({ theme: currentTheme }) => ({
-          transition: currentTheme.transitions.create(
-            ["border-color", "background-color", "transform"],
-            { duration: currentTheme.transitions.duration.shorter },
+        root: ({ theme: t }) => ({
+          transition: t.transitions.create(
+            ["border-color", "background-color", "transform", "box-shadow"],
+            { duration: 150 },
           ),
+        }),
+      },
+    },
+    MuiDivider: {
+      styleOverrides: {
+        root: ({ theme: t }) => ({
+          borderColor: t.palette.divider,
         }),
       },
     },

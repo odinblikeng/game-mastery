@@ -9,11 +9,11 @@ declare module "@mui/material/styles" {
     borderStrong: string;
     borderGlow: string;
     shadow: string;
-    headerBg: string;
-    footerBg: string;
-    logoBg: string;
-    logoBorder: string;
-    logoText: string;
+    railBg: string;
+    railBorder: string;
+    railActiveMark: string;
+    railActiveIcon: string;
+    railActiveGlow: string;
   }
 
   interface SidebarPalette {
