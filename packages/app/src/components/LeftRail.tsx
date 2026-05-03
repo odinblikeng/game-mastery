@@ -79,7 +79,10 @@ export default function LeftRail() {
     <Box
       component="nav"
       sx={{
-        width: 72,
+        width: { xs: 72, lg: 4 },
+        overflow: "hidden",
+        transition: "width 0.2s ease",
+        "&:hover": { width: 72 },
         height: "100vh",
         position: "sticky",
         top: 0,

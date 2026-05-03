@@ -9,7 +9,9 @@
       "PowerShell(Get-ChildItem -Path \"c:\\\\git\\\\game_mastery\\\\game-mastery\" -Force | Select-Object Name, @{Name=\"Type\";Expression={if\\($_.PSIsContainer\\){\"Folder\"}else{\"File\"}}})",
       "Bash(Get-ChildItem -Path \"c:\\\\git\\\\game_mastery\\\\game-mastery\\\\.github\" -Recurse -File)",
       "Bash(npx tsc *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\git\\\\game_mastery\\\\game-mastery\" -Directory)",
+      "Bash(Select-Object Name)"
     ]
   }
 }
