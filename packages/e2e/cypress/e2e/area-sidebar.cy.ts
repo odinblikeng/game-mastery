@@ -8,9 +8,11 @@ const visitAndWait = (path: string) => {
 };
 
 describe("Area sidebar", () => {
-  it("shows all available areas", () => {
-    visitAndWait("/");
+  beforeEach(() => {
+    visitAndWait("/?sidebar=areas");
+  });
 
+  it("shows all available areas", () => {
     cy.get('[data-testid^="cy-area-item-"]').should("have.length", 19);
     cy.get('[data-testid="cy-area-item-m1"]').should("contain", "Foyer and Hallway");
     cy.get('[data-testid="cy-area-item-m2"]').should("contain", "Patio");
@@ -18,8 +20,6 @@ describe("Area sidebar", () => {
   });
 
   it("filters by code and title", () => {
-    visitAndWait("/");
-
     cy.get('[data-testid="cy-area-search-input"]').type("M1");
     cy.get('[data-testid="cy-area-item-m1"]').should("exist");
     cy.get('[data-testid="cy-area-item-m10"]').should("exist");
@@ -32,15 +32,11 @@ describe("Area sidebar", () => {
   });
 
   it("shows an empty-state message when the search misses", () => {
-    visitAndWait("/");
-
     cy.get('[data-testid="cy-area-search-input"]').type("zzz");
     cy.contains("No areas match your search.").should("be.visible");
   });
 
   it("loads the selected area content into the main panel", () => {
-    visitAndWait("/");
-
     cy.get('[data-testid="cy-area-item-m1"]').click();
 
     cy.location("search").should("include", "area=m1");
@@ -50,8 +46,6 @@ describe("Area sidebar", () => {
   });
 
   it("collapses the Areas sidebar and updates the URL when the collapse button is clicked", () => {
-    visitAndWait("/?sidebar=areas");
-
     cy.get('[data-testid="cy-area-search-input"]').should("be.visible");
     cy.get('[data-testid="cy-area-collapse-button"]').click();
 

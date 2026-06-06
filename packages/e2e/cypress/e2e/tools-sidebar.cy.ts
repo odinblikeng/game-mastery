@@ -8,17 +8,17 @@ const visitAndWait = (path: string) => {
 };
 
 describe("Tools sidebar", () => {
-  it("shows the tool menu", () => {
+  beforeEach(() => {
     visitAndWait("/?tools=menu");
+  });
 
+  it("shows the tool menu", () => {
     cy.get('[data-testid="cy-tools-menu"]').should("be.visible");
     cy.get('[data-testid="cy-tool-item-initiative"]').should("contain", "Initiative");
     cy.contains("Session Active").should("be.visible");
   });
 
   it("opens the initiative tool and returns to the menu", () => {
-    visitAndWait("/?tools=menu");
-
     cy.get('[data-testid="cy-tool-item-initiative"]').click();
     cy.location("search").should("include", "tools=initiative");
     cy.get('[data-testid="cy-initiative-name-input"]').should("be.visible");
@@ -36,8 +36,6 @@ describe("Tools sidebar", () => {
   });
 
   it("collapses the tools menu and updates the URL when the collapse button is clicked", () => {
-    visitAndWait("/?tools=menu");
-
     cy.get('[data-testid="cy-tools-menu"]').should("be.visible");
     cy.get('[data-testid="cy-tools-collapse-button"]').click();
 
@@ -46,12 +44,11 @@ describe("Tools sidebar", () => {
   });
 
   it("collapses the active tool and updates the URL when the collapse button is clicked", () => {
-    visitAndWait("/?tools=initiative");
-
+    cy.get('[data-testid="cy-tool-item-initiative"]').click();
     cy.get('[data-testid="cy-initiative-name-input"]').should("be.visible");
     cy.get('[data-testid="cy-tools-collapse-button"]').click();
 
-    cy.get('[data-testid="cy-initiative-name-input"]').should("not.be.visible");
+    cy.get('[data-testid="cy-initiative-name-input"]').should("not.exist");
     cy.location("search").should("not.include", "tools");
   });
 });
