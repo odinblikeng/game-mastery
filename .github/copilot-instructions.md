@@ -61,5 +61,9 @@
 - Area navigation (selecting an area, closing area sidebar) uses `router.push()` so that `page.tsx` (server component) re-renders with the correct `searchParams`. Tools sidebar state uses `window.history.pushState` (store action) — no server re-render needed.
 - See `.github/instructions/state-management.instructions.md` for full detail on slices, URL sync, and patterns.
 
+## Instruction Maintenance
+- **Updating Instructions**: Whenever you start or implement a feature that changes the rules, conventions, or architectures described in these instructions, you **MUST** update these instruction files (`CLAUDE.md`, `.github/copilot-instructions.md`, or `.github/instructions/state-management.instructions.md`) to reflect the new state. This ensures instructions do not drift from the actual codebase behavior.
+
 ## Project Notes
 - Respect the existing strict TypeScript and Next.js ESLint setup.
+

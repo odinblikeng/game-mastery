@@ -112,3 +112,7 @@ All initiative state lives in the initiative slice. Key rules:
 - Do not use `window.history.pushState` for navigations that need `page.tsx` to re-render with new `searchParams`. Use `router.push()` from the component.
 - Do not read from `useSearchParams()` in arbitrary components to drive UI. Let `StoreHydrator` sync once and read from the store.
 - Do not reach into the store from server components. The store is client-only.
+
+## Instruction Maintenance
+- **Updating Instructions**: Whenever you start or implement a feature that changes the rules, conventions, or architectures described in these instructions, you **MUST** update these instruction files (`CLAUDE.md`, `.github/copilot-instructions.md`, or `.github/instructions/state-management.instructions.md`) to reflect the new state. This ensures instructions do not drift from the actual codebase behavior.
+
