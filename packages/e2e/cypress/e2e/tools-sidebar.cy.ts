@@ -34,4 +34,24 @@ describe("Tools sidebar", () => {
     cy.get('[data-testid="cy-tools-menu"]').should("be.visible");
     cy.get('[data-testid="cy-tool-item-initiative"]').should("be.visible");
   });
+
+  it("collapses the tools menu and updates the URL when the collapse button is clicked", () => {
+    visitAndWait("/?tools=menu");
+
+    cy.get('[data-testid="cy-tools-menu"]').should("be.visible");
+    cy.get('[data-testid="cy-tools-collapse-button"]').click();
+
+    cy.get('[data-testid="cy-tools-menu"]').should("not.be.visible");
+    cy.location("search").should("not.include", "tools");
+  });
+
+  it("collapses the active tool and updates the URL when the collapse button is clicked", () => {
+    visitAndWait("/?tools=initiative");
+
+    cy.get('[data-testid="cy-initiative-name-input"]').should("be.visible");
+    cy.get('[data-testid="cy-tools-collapse-button"]').click();
+
+    cy.get('[data-testid="cy-initiative-name-input"]').should("not.be.visible");
+    cy.location("search").should("not.include", "tools");
+  });
 });

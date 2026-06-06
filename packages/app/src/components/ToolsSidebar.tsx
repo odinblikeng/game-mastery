@@ -11,6 +11,7 @@ import InitiativeTracker from "@/components/InitiativeTracker";
 import PanelHeader from "@/components/PanelHeader";
 import StatusDot from "@/components/StatusDot";
 import ToolCard from "@/components/ToolCard";
+import CollapseButton from "@/components/CollapseButton";
 import { useGameStore } from "@/store/useGameStore";
 import type { ToolDefinition } from "@/types/tools";
 
@@ -30,36 +31,45 @@ const toolRegistry: ToolDefinition[] = [
 
 export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
   const setToolsParam = useGameStore((s) => s.setToolsParam);
+  const closeTools = useGameStore((s) => s.closeTools);
   const activeTool = toolRegistry.find(({ slug }) => slug === tool);
 
   const navigate = (toolValue: string) => setToolsParam(toolValue);
   const goBack = () => navigate("menu");
+  const handleCollapse = () => closeTools();
 
   if (activeTool) {
     const ActiveTool = activeTool.component;
     return (
       <>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-          <IconButton
-            size="small"
-            onClick={goBack}
-            aria-label="Back to tools"
-            data-testid="cy-tools-back-button"
-            sx={{ border: "1px solid", borderColor: "divider", color: "sidebar.text" }}
-          >
-            <ArrowBackRoundedIcon />
-          </IconButton>
-          <Typography
-            sx={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "sidebar.mutedText",
-            }}
-          >
-            {activeTool.label}
-          </Typography>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <IconButton
+              size="small"
+              onClick={goBack}
+              aria-label="Back to tools"
+              data-testid="cy-tools-back-button"
+              sx={{ border: "1px solid", borderColor: "divider", color: "sidebar.text" }}
+            >
+              <ArrowBackRoundedIcon />
+            </IconButton>
+            <Typography
+              sx={{
+                fontSize: 11,
+                fontWeight: 700,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "sidebar.mutedText",
+              }}
+            >
+              {activeTool.label}
+            </Typography>
+          </Box>
+          <CollapseButton
+            direction="right"
+            onClick={handleCollapse}
+            testId="cy-tools-collapse-button"
+          />
         </Box>
         <Typography variant="body2" sx={{ mb: 2.5, color: "sidebar.mutedText", fontSize: "0.8rem" }}>
           {activeTool.description}
@@ -72,7 +82,14 @@ export default function ToolsSidebar({ tool }: ToolsSidebarProps) {
   return (
     <>
       <PanelHeader title="Session Tools">
-        <StatusDot label="Session Active" />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <StatusDot label="Session Active" />
+          <CollapseButton
+            direction="right"
+            onClick={handleCollapse}
+            testId="cy-tools-collapse-button"
+          />
+        </Box>
       </PanelHeader>
       <List disablePadding data-testid="cy-tools-menu" sx={{ display: "grid", gap: 1 }}>
         {toolRegistry.map(({ slug, label, description, icon }) => (
