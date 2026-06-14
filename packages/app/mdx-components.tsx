@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import type { MDXComponents } from "mdx/types";
 import NextLink from "next/link";
 import MonsterReference from "@/components/MonsterReference";
+import TreasureReference from "@/components/TreasureReference";
 
 function Callout({
   title,
@@ -89,5 +90,6 @@ export function useMDXComponents(): MDXComponents {
     li: (props) => <Box component="li" sx={{ lineHeight: 1.7, mb: 0.5 }} {...props} />,
     Callout,
     Monster: MonsterReference,
+    Treasure: TreasureReference,
   };
 }

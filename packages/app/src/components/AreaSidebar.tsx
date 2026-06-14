@@ -4,10 +4,14 @@ import List from "@mui/material/List";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { AreaMeta } from "@/lib/areas";
 import AreaListItem from "@/components/AreaListItem";
 import GhostInput from "@/components/GhostInput";
 import PanelHeader from "@/components/PanelHeader";
+import CollapseButton from "@/components/CollapseButton";
+import { useGameStore } from "@/store/useGameStore";
+import { buildUrlFromState } from "@/store/urlSync";
 
 type AreaSidebarProps = {
   areas: AreaMeta[];
@@ -16,6 +20,20 @@ type AreaSidebarProps = {
 
 export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
   const [search, setSearch] = useState("");
+  const closeAreaSidebar = useGameStore((s) => s.closeAreaSidebar);
+  const toolsParam = useGameStore((s) => s.toolsParam);
+  const router = useRouter();
+
+  const handleCollapse = () => {
+    closeAreaSidebar();
+    router.push(
+      buildUrlFromState({
+        areaSidebarOpen: false,
+        selectedAreaSlug: selectedSlug ?? null,
+        toolsParam,
+      })
+    );
+  };
 
   const filtered = areas.filter((area) => {
     const q = search.toLowerCase();
@@ -27,7 +45,13 @@ export default function AreaSidebar({ areas, selectedSlug }: AreaSidebarProps) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", flex: 1, minHeight: 0, p: 2 }}>
-      <PanelHeader title="Areas" />
+      <PanelHeader title="Areas">
+        <CollapseButton
+          direction="left"
+          onClick={handleCollapse}
+          testId="cy-area-collapse-button"
+        />
+      </PanelHeader>
       <GhostInput
         placeholder="Search by code or title"
         fullWidth

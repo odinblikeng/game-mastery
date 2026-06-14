@@ -6,6 +6,7 @@ import AppShell from "@/components/AppShell";
 import ThemeRegistry from "@/components/ThemeRegistry";
 import { getAreaList } from "@/lib/areas";
 import { getMonsterDataMap, getMonsterList } from "@/lib/monsters";
+import { getTreasureDataMap, getTreasureList } from "@/lib/treasures";
 import "./globals.css";
 
 const bodyFont = Alegreya_Sans({
@@ -35,6 +36,8 @@ export default async function RootLayout({
   const areas = await getAreaList();
   const monsters = await getMonsterList();
   const monsterDataMap = await getMonsterDataMap(monsters.map((monster) => monster.slug));
+  const treasures = await getTreasureList();
+  const treasureDataMap = await getTreasureDataMap(treasures.map((treasure) => treasure.slug));
 
   return (
     <html
@@ -46,7 +49,13 @@ export default async function RootLayout({
         <InitColorSchemeScript attribute="class" />
         <ThemeRegistry>
           <Suspense fallback={<main className="app-main">{children}</main>}>
-            <AppShell areas={areas} monsters={monsters} monsterDataMap={monsterDataMap}>
+            <AppShell
+              areas={areas}
+              monsters={monsters}
+              monsterDataMap={monsterDataMap}
+              treasures={treasures}
+              treasureDataMap={treasureDataMap}
+            >
               {children}
             </AppShell>
           </Suspense>

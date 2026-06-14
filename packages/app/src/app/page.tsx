@@ -4,7 +4,7 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import AreaMonsterList from "@/components/AreaMonsterList";
+import AreaReferenceList from "@/components/AreaReferenceList";
 import HeroActionCards from "@/components/HeroActionCards";
 import { getArea, getAreaList } from "@/lib/areas";
 
@@ -45,7 +45,26 @@ export default async function Home({ searchParams }: HomeProps) {
               <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 760 }}>
                 {selectedArea.description}
               </Typography>
-              {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
+              {(selectedArea.monsters?.length || selectedArea.treasures?.length) ? (
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                      xs: "1fr",
+                      md: selectedArea.monsters?.length && selectedArea.treasures?.length ? "1fr 1fr" : "1fr",
+                    },
+                    gap: 3,
+                    mt: 1,
+                  }}
+                >
+                  {selectedArea.monsters?.length ? (
+                    <AreaReferenceList title="Monsters" slugs={selectedArea.monsters} type="monster" />
+                  ) : null}
+                  {selectedArea.treasures?.length ? (
+                    <AreaReferenceList title="Treasures" slugs={selectedArea.treasures} type="treasure" />
+                  ) : null}
+                </Box>
+              ) : null}
             </Stack>
             <Divider />
             <Box sx={{ "& > :last-child": { mb: 0 } }}>

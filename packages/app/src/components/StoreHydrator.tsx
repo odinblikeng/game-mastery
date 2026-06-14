@@ -5,10 +5,13 @@ import { useSearchParams } from "next/navigation";
 import { useColorScheme } from "@mui/material/styles";
 import { useGameStore } from "@/store/useGameStore";
 import type { MonsterDataMap, MonsterSummary } from "@/types/monster";
+import type { TreasureDataMap, TreasureSummary } from "@/types/treasure";
 
 type StoreHydratorProps = {
   monsters: MonsterSummary[];
   monsterDataMap: MonsterDataMap;
+  treasures: TreasureSummary[];
+  treasureDataMap: TreasureDataMap;
 };
 
 /**
@@ -26,7 +29,12 @@ type StoreHydratorProps = {
  * Must be a client component — rendered once inside AppShell.
  * Renders nothing.
  */
-export default function StoreHydrator({ monsters, monsterDataMap }: StoreHydratorProps) {
+export default function StoreHydrator({
+  monsters,
+  monsterDataMap,
+  treasures,
+  treasureDataMap,
+}: StoreHydratorProps) {
   const searchParams = useSearchParams();
   const { mode } = useColorScheme();
   const registerStaticData = useGameStore((s) => s.registerStaticData);
@@ -38,8 +46,8 @@ export default function StoreHydrator({ monsters, monsterDataMap }: StoreHydrato
 
   // Register static data on mount — runs once per page session.
   useEffect(() => {
-    registerStaticData(monsters, monsterDataMap);
-  }, [monsters, monsterDataMap, registerStaticData]);
+    registerStaticData(monsters, monsterDataMap, treasures, treasureDataMap);
+  }, [monsters, monsterDataMap, treasures, treasureDataMap, registerStaticData]);
 
   // Sync area sidebar and selected area from URL on every Next.js navigation.
   // Area content is server-rendered by page.tsx based on URL searchParams,

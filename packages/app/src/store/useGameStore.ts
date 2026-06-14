@@ -6,6 +6,7 @@ import { renumberMonsterCopies, isCharDead } from "@/lib/initiative";
 import { pushUrlFromState } from "@/store/urlSync";
 import type { Character, ResolvedCharacter } from "@/types/initiative";
 import type { MonsterDataMap, MonsterSummary } from "@/types/monster";
+import type { TreasureDataMap, TreasureSummary } from "@/types/treasure";
 
 // Module-scoped ID counter — safe to use outside React render.
 let idCounter = 0;
@@ -21,7 +22,14 @@ function nextId(): string {
 type StaticDataSlice = {
   monsters: MonsterSummary[];
   monsterDataMap: MonsterDataMap;
-  registerStaticData: (monsters: MonsterSummary[], monsterDataMap: MonsterDataMap) => void;
+  treasures: TreasureSummary[];
+  treasureDataMap: TreasureDataMap;
+  registerStaticData: (
+    monsters: MonsterSummary[],
+    monsterDataMap: MonsterDataMap,
+    treasures: TreasureSummary[],
+    treasureDataMap: TreasureDataMap,
+  ) => void;
 };
 
 type InitiativeSlice = {
@@ -50,6 +58,7 @@ type InitiativeSlice = {
 
 type UISlice = {
   openMonsterSlug: string | null;
+  openTreasureSlug: string | null;
   areaSidebarOpen: boolean;
   selectedAreaSlug: string | null;
   toolsParam: string | null;
@@ -57,6 +66,8 @@ type UISlice = {
 
   openStatBlock: (slug: string) => void;
   closeStatBlock: () => void;
+  openTreasure: (slug: string) => void;
+  closeTreasure: () => void;
   openAreaSidebar: () => void;
   closeAreaSidebar: () => void;
   selectArea: (slug: string) => void;
@@ -77,9 +88,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
   // -------------------------------------------------------------------------
   monsters: [],
   monsterDataMap: {},
+  treasures: [],
+  treasureDataMap: {},
 
-  registerStaticData(monsters, monsterDataMap) {
-    set({ monsters, monsterDataMap });
+  registerStaticData(monsters, monsterDataMap, treasures, treasureDataMap) {
+    set({ monsters, monsterDataMap, treasures, treasureDataMap });
   },
 
   // -------------------------------------------------------------------------
@@ -293,6 +306,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   // UI state
   // -------------------------------------------------------------------------
   openMonsterSlug: null,
+  openTreasureSlug: null,
   areaSidebarOpen: true,
   selectedAreaSlug: null,
   toolsParam: null,
@@ -306,6 +320,16 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   closeStatBlock() {
     set({ openMonsterSlug: null });
+  },
+
+  openTreasure(slug) {
+    const { treasureDataMap } = get();
+    if (!treasureDataMap[slug]) return;
+    set({ openTreasureSlug: slug });
+  },
+
+  closeTreasure() {
+    set({ openTreasureSlug: null });
   },
 
   openAreaSidebar() {
@@ -356,6 +380,7 @@ export const selectInitiative = (s: GameStore) => ({
 });
 export const selectUI = (s: GameStore) => ({
   openMonsterSlug: s.openMonsterSlug,
+  openTreasureSlug: s.openTreasureSlug,
   areaSidebarOpen: s.areaSidebarOpen,
   selectedAreaSlug: s.selectedAreaSlug,
   toolsParam: s.toolsParam,
