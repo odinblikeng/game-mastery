@@ -46,8 +46,22 @@ export default async function Home({ searchParams }: HomeProps) {
               <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 760 }}>
                 {selectedArea.description}
               </Typography>
-              {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
-              {selectedArea.treasures?.length ? <AreaTreasureList slugs={selectedArea.treasures} /> : null}
+              {(selectedArea.monsters?.length || selectedArea.treasures?.length) ? (
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                      xs: "1fr",
+                      md: selectedArea.monsters?.length && selectedArea.treasures?.length ? "1fr 1fr" : "1fr",
+                    },
+                    gap: 3,
+                    mt: 1,
+                  }}
+                >
+                  {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
+                  {selectedArea.treasures?.length ? <AreaTreasureList slugs={selectedArea.treasures} /> : null}
+                </Box>
+              ) : null}
             </Stack>
             <Divider />
             <Box sx={{ "& > :last-child": { mb: 0 } }}>
