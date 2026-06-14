@@ -1,6 +1,6 @@
 ---
 name: import-level-content
-description: "Import raw level content (areas and monsters) into the app. Use when: importing level data, migrating area markdown, converting monster stat blocks, adding raw module dumps, bulk content migration, new level folder, restructuring area or monster files. Covers MDX conversion, JSON stat-block creation, image normalization, and build verification."
+description: "Import raw level content (areas, monsters, and treasures) into the app. Use when: importing level data, migrating area markdown, converting monster stat blocks, extracting treasures, adding raw module dumps, bulk content migration, new level folder, restructuring area or monster files. Covers MDX conversion, JSON stat-block/treasure creation, image normalization, and build verification."
 argument-hint: "Name of the level folder, e.g. level1"
 ---
 
@@ -33,10 +33,12 @@ Work through five phases **in order**. Complete each phase before starting the n
 2. For each `.md` file at root level, confirm it is an **area** (starts with `# M<N>. <Title>`).
 3. For each `.md` in `monsters/`, confirm it is a **stat block** (name on line 1, type on line 2, ability scores present).
 4. For each image file in `monsters/`, note its extension and the monster it belongs to.
-5. Present a summary table to the user:
-   - **Areas**: file → code, title, one-line description (inferred from content).
+5. Identify **treasures** mentioned in the area descriptions.
+6. Present a summary table to the user:
+   - **Areas**: file → code, title, one-line description (inferred from content), treasures found (if any).
    - **Monsters**: file → name, slug (camelCase), CR, HP, DEX mod, has image (y/n).
-6. Ask the user to confirm or correct the table before proceeding.
+   - **Treasures**: name → slug (camelCase), estimated value, type.
+7. Ask the user to confirm or correct the table before proceeding.
 
 ---
 
@@ -69,15 +71,19 @@ For each area `.md` source file:
      code: "M<X>",
      title: "<Title>",
      description: "<one-sentence GM-facing summary>",
+     monsters: ["<monsterSlug1>", ...],
+     treasures: ["<treasureSlug1>", ...],
    };
    ```
    - `code` is uppercase (e.g. `M4`).
    - `title` comes from the `# M<X>. <Title>` heading, without the code prefix.
    - `description` is a concise sentence suitable for the area sidebar list.
+   - `monsters` and `treasures` list the slugs for monsters/treasures present in this area.
 3. **Copy the body** from the source. Apply these transformations:
    - Fix mojibake: `â€"` → `—`, `â€™` → `'`, `â€œ` → `"`, `â€` → `"`.
    - Keep `>` blockquotes for **read-aloud** text.
    - Convert GM-sidebar callouts (blockquotes with bold all-caps headers like `> **FISTANDIA'S AND FREYOT'S HOMUNCULI**`) into `<Callout title="...">` components. Wrap the body text in `<p>` tags inside the Callout.
+   - Convert inline treasure mentions (like `**Treasure.** ... silverware ...`) to use the `<Treasure slug="silverware">silverware</Treasure>` component.
    - Use inline bold (`**Label.**`) for section headers — do **not** add `##` subheadings.
 4. **Verify** the `Callout` component is registered in `packages/app/mdx-components.tsx`. If it is missing, add it per the Callout Component section below.
 
@@ -144,6 +150,27 @@ For each monster `.md` source file:
 
 ---
 
+### Phase 4.5 — Create treasure JSON files
+
+Destination: `packages/app/src/content/treasures/<camelCaseSlug>/index.json`
+
+For each treasure identified in Phase 1:
+
+1. **Derive the slug** as camelCase from the name of the treasure (e.g. `Jeweled Letter Opener` -> `jeweledLetterOpener`).
+2. **Create the directory and `index.json`** at the destination path.
+3. **Write the treasure JSON** matching the `TreasureData` schema:
+   ```json
+   {
+     "name": "Display Name",
+     "description": "Item description from the area text.",
+     "value": "Value in gp (e.g., '20 gp', 'Varies')",
+     "type": "item/magic item/consumable/materials"
+   }
+   ```
+
+
+---
+
 ### Phase 5 — Build and verify
 
 1. Run `npm.cmd run build` in `packages/app/`. Must complete with **zero errors**.
@@ -151,7 +178,8 @@ For each monster `.md` source file:
    - If there are MDX parse errors, fix the offending `.mdx` file and re-run.
 2. Confirm area count: `ls packages/app/src/content/areas/*.mdx | Measure-Object` should equal the previous count plus the newly added files.
 3. Confirm monster count: `ls packages/app/src/content/monsters/*/index.json | Measure-Object` should equal the previous count plus the newly added files.
-4. Confirm image count: `ls packages/app/public/monsters/* | Measure-Object` should equal the previous count plus the newly copied images.
+4. Confirm treasure count: `ls packages/app/src/content/treasures/*/index.json | Measure-Object` should equal the previous count plus the newly added files.
+5. Confirm image count: `ls packages/app/public/monsters/* | Measure-Object` should equal the previous count plus the newly copied images.
 
 ---
 

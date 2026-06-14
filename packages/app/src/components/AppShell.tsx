@@ -17,15 +17,26 @@ import ToolsSidebar from "@/components/ToolsSidebar";
 import { useGameStore } from "@/store/useGameStore";
 import { buildUrlFromState } from "@/store/urlSync";
 import type { MonsterDataMap, MonsterSummary } from "@/types/monster";
+import type { TreasureDataMap, TreasureSummary } from "@/types/treasure";
+import TreasureDetailDialog from "@/components/TreasureDetailDialog";
 
 type AppShellProps = {
   areas: AreaMeta[];
   monsters: MonsterSummary[];
   monsterDataMap: MonsterDataMap;
+  treasures: TreasureSummary[];
+  treasureDataMap: TreasureDataMap;
   children: ReactNode;
 };
 
-export default function AppShell({ areas, monsters, monsterDataMap, children }: AppShellProps) {
+export default function AppShell({
+  areas,
+  monsters,
+  monsterDataMap,
+  treasures,
+  treasureDataMap,
+  children,
+}: AppShellProps) {
   const isDesktop = useMediaQuery<Theme>((theme) => theme.breakpoints.up("lg"), { defaultMatches: true });
   const isHydrated = useSyncExternalStore(
     () => () => {},
@@ -46,7 +57,12 @@ export default function AppShell({ areas, monsters, monsterDataMap, children }: 
 
   return (
     <>
-      <StoreHydrator monsters={monsters} monsterDataMap={monsterDataMap} />
+      <StoreHydrator
+        monsters={monsters}
+        monsterDataMap={monsterDataMap}
+        treasures={treasures}
+        treasureDataMap={treasureDataMap}
+      />
       <div className="app-shell" data-testid="cy-app-shell" data-hydrated={isHydrated ? "true" : "false"}>
         <LeftRail />
 
@@ -100,6 +116,7 @@ export default function AppShell({ areas, monsters, monsterDataMap, children }: 
         </Drawer>
       </div>
       <MonsterStatBlockDialog />
+      <TreasureDetailDialog />
     </>
   );
 }

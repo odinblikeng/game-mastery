@@ -9,6 +9,7 @@ export type AreaMeta = {
     description: string;
     slug: string;
     monsters?: string[];
+    treasures?: string[];
 };
 
 export type AreaDocumentMetadata = Omit<AreaMeta, "slug">;
@@ -38,7 +39,9 @@ function isAreaDocumentMetadata(value: unknown): value is AreaDocumentMetadata {
         typeof metadata.title === "string" &&
         typeof metadata.description === "string" &&
         (metadata.monsters === undefined ||
-            (Array.isArray(metadata.monsters) && metadata.monsters.every((monster) => typeof monster === "string")))
+            (Array.isArray(metadata.monsters) && metadata.monsters.every((monster) => typeof monster === "string"))) &&
+        (metadata.treasures === undefined ||
+            (Array.isArray(metadata.treasures) && metadata.treasures.every((treasure) => typeof treasure === "string")))
         );
     }
     
@@ -90,12 +93,13 @@ function isAreaDocumentMetadata(value: unknown): value is AreaDocumentMetadata {
     export async function getAreaList(): Promise<AreaMeta[]> {
         const areaEntries = await loadAreas();
         
-        return areaEntries.map(({ code, title, description, slug, monsters }) => ({
+        return areaEntries.map(({ code, title, description, slug, monsters, treasures }) => ({
             code,
             title,
             description,
             slug,
             monsters,
+            treasures,
         }));
     }
     

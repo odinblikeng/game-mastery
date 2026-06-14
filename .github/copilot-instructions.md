@@ -18,10 +18,11 @@
 - Prefer direct typed imports over runtime file parsing for static content.
 
 ## Content Authoring
-- Area content lives as MDX files in `src/content/areas/*.mdx` with exported `metadata` objects for structured data (code, title, description).
-- MDX rendering uses `@next/mdx` with the app package root `mdx-components.tsx` that maps markdown elements to MUI components.
-- The area loader in `src/lib/areas.ts` auto-discovers MDX files from `src/content/areas/` and expects each file to export a default MDX component plus `metadata` with `code`, `title`, and `description`.
+- Area content lives as MDX files in `src/content/areas/*.mdx` with exported `metadata` objects for structured data (code, title, description, monsters, treasures).
+- MDX rendering uses `@next/mdx` with the app package root `mdx-components.tsx` that maps markdown elements to MUI components, including `<Monster>` and `<Treasure>`.
+- The area loader in `src/lib/areas.ts` auto-discovers MDX files from `src/content/areas/` and expects each file to export a default MDX component plus `metadata` with `code`, `title`, `description`, `monsters`, and `treasures`.
 - When adding or replacing areas, keep the same MDX export shape and place the files in `src/content/areas/`; no registry edits should be required.
+- Monsters are defined under `src/content/monsters/[slug]/index.json` and treasures are defined under `src/content/treasures/[slug]/index.json`.
 
 ## UI / Layout Preferences
 - The app shell is a single-page layout — avoid dedicated routes for content that should live in a sidebar or panel.

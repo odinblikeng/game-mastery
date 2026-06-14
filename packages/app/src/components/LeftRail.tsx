@@ -57,7 +57,7 @@ export default function LeftRail() {
     }
   };
 
-  const isDark = colorScheme === "dark" ?? mode === "dark";
+  const isDark = colorScheme === "dark" || mode === "dark";
 
   const toggleColorMode = () => {
     setMode(isDark ? "light" : "dark");

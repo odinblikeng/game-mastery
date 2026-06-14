@@ -5,6 +5,7 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import AreaMonsterList from "@/components/AreaMonsterList";
+import AreaTreasureList from "@/components/AreaTreasureList";
 import HeroActionCards from "@/components/HeroActionCards";
 import { getArea, getAreaList } from "@/lib/areas";
 
@@ -46,6 +47,7 @@ export default async function Home({ searchParams }: HomeProps) {
                 {selectedArea.description}
               </Typography>
               {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
+              {selectedArea.treasures?.length ? <AreaTreasureList slugs={selectedArea.treasures} /> : null}
             </Stack>
             <Divider />
             <Box sx={{ "& > :last-child": { mb: 0 } }}>
