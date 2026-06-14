@@ -9,7 +9,7 @@
     "build": "npm.cmd -w app run build",
     "start": "npm.cmd -w app run start",
     "lint": "npm.cmd -w app run lint",
-    "test:e2e": "npm.cmd -w e2e run cy:run",
-    "test:e2e:open": "npm.cmd -w e2e run cy:open"
+    "test:e2e": "npm.cmd -w e2e run test",
+    "test:e2e:open": "npm.cmd -w e2e run test:ui"
   }
 }
