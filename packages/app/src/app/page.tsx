@@ -4,8 +4,7 @@ import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import AreaMonsterList from "@/components/AreaMonsterList";
-import AreaTreasureList from "@/components/AreaTreasureList";
+import AreaReferenceList from "@/components/AreaReferenceList";
 import HeroActionCards from "@/components/HeroActionCards";
 import { getArea, getAreaList } from "@/lib/areas";
 
@@ -58,8 +57,12 @@ export default async function Home({ searchParams }: HomeProps) {
                     mt: 1,
                   }}
                 >
-                  {selectedArea.monsters?.length ? <AreaMonsterList slugs={selectedArea.monsters} /> : null}
-                  {selectedArea.treasures?.length ? <AreaTreasureList slugs={selectedArea.treasures} /> : null}
+                  {selectedArea.monsters?.length ? (
+                    <AreaReferenceList title="Monsters" slugs={selectedArea.monsters} type="monster" />
+                  ) : null}
+                  {selectedArea.treasures?.length ? (
+                    <AreaReferenceList title="Treasures" slugs={selectedArea.treasures} type="treasure" />
+                  ) : null}
                 </Box>
               ) : null}
             </Stack>

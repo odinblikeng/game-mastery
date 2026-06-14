@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-export {};
+export { };
 
 const visitAndWait = (path: string) => {
   cy.visit(path, {
@@ -16,7 +16,7 @@ describe("Monster stat block overlay", () => {
     it("shows monster buttons for an area with monsters", () => {
       visitAndWait("/?sidebar=areas&area=m1");
 
-      cy.contains("Monsters in This Area").should("be.visible");
+      cy.contains("Monsters").should("be.visible");
       cy.get('[data-testid="cy-area-monster-sage"]').should("contain", "Sage");
       cy.get('[data-testid="cy-area-monster-imp"]').should("contain", "Imp");
     });
@@ -24,7 +24,7 @@ describe("Monster stat block overlay", () => {
     it("does not show monster section for an area without monsters", () => {
       visitAndWait("/?sidebar=areas&area=m2");
 
-      cy.contains("Monsters in This Area").should("not.exist");
+      cy.contains("Monsters").should("not.exist");
     });
 
     it("opens the stat block dialog when clicking an area monster button", () => {
